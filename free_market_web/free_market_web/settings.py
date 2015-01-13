@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'population',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,7 +61,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'freemarketdb',
-        'USER': 'ChaosOrd',
+        'USER': 'chaosord',
         'PASSWORD': 'ChaosOrd',
         'HOST': '127.0.0.1'
     }
