@@ -39,11 +39,11 @@ test("key other than enter shoud not focus on next input", function() {
 });
 
 test("IsTextbox should return true when given textbox element", function() {
-  equal(Navigation.is_text_box($('#id_first_tb')), true);
+  equal(navigation.IsTextBox($('#id_first_tb')), true);
 });
 
 test("IsTextbox should return false when given button element", function() {
-  equal(Navigation.is_text_box($('#id_btn')), false);
+  equal(navigation.IsTextBox($('#id_btn')), false);
 });
 
 test("enter key should not focus if current input is not text box", function()
