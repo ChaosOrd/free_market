@@ -18,10 +18,11 @@ class PopulationTest(FunctionalTest):
         # The name text box is focused
         self.assertEqual(self.browser.switch_to_active_element(), input_name_tb)
         # She decides to change its name and presses enter
+        input_name_tb.clear()
         input_name_tb.send_keys('Farmers\n')
 
         # The next input box Yulia sees is the population quantity
-        input_qty_tb = self.browser.find_element_by_id('tb_input_qty')
+        input_qty_tb = self.browser.find_element_by_id('id_input_qty')
         self.assertEqual(input_qty_tb.text, '')
 
         # Since Yulia pressed enter in a previous element, now the quantity

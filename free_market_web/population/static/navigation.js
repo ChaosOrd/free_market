@@ -12,6 +12,7 @@ var navigation = {
 
 
 $(document).ready(function () {
+    $('input[tabindex=0]').focus();
     document.onkeypress=function(e) {
         e = e || window.event;
         var selected_tab_idx = document.activeElement.tabIndex;
