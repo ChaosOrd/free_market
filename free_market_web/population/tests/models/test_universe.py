@@ -8,3 +8,8 @@ class TestUniverseModel(TestCase):
         new_universe = Universe.objects.create()
         self.assertEqual(Universe.objects.count(), 1)
         self.assertEqual(Universe.objects.first(), new_universe)
+
+    def test_get_absolute_url(self):
+        universe = Universe.objects.create()
+        self.assertEqual(universe.get_absolute_url(),
+                         '/universe/%d/' % universe.id)

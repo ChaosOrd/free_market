@@ -9,8 +9,6 @@ class CustomPopulationTest(TestCase):
     def setUp(self):
         self.request = HttpRequest()
         self.request.method = 'POST'
-        self.request.POST['name'] = 'Farmers'
-        self.request.POST['quantity'] = 100
 
     def test_renders_new_universe(self):
         response = self.client.get('/new_universe/')
@@ -18,7 +16,11 @@ class CustomPopulationTest(TestCase):
 
     @patch('population.views.NewPopulationForm')
     def test_passes_POST_data_to_NewPopulationForm(self, form_class_mock):
+        form_obj_mock = form_class_mock.return_value
+        form_obj_mock.is_valid.return_value = True
+
         new_universe(self.request)
+
         form_class_mock.assert_called_once_with(data=self.request.POST)
 
     @patch('population.views.NewPopulationForm')
