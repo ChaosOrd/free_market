@@ -1,14 +1,7 @@
 from django.http.request import HttpRequest
 from django.test import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from population.views import custom_population
-
-
-class HomePageTest(TestCase):
-
-    def test_home_page_renderes_home_template(self):
-        response = self.client.get('/')
-        self.assertTemplateUsed(response, 'home.html')
 
 
 class CustomPopulationTest(TestCase):
@@ -48,7 +41,9 @@ class CustomPopulationTest(TestCase):
 
     @patch('population.views.NewPopulationForm')
     @patch('population.views.render')
-    def test_custom_population_passes_form_to_template(self, render_mock, form_class_mock):
+    def test_custom_population_passes_form_to_template(
+        self, render_mock, form_class_mock
+    ):
         form_object_mock = form_class_mock.return_value
         self.request.method = 'GET'
 
@@ -56,3 +51,13 @@ class CustomPopulationTest(TestCase):
 
         render_mock.assert_called_once_with(
             self.request, 'custom_population.html', {'form': form_object_mock})
+
+    @patch('population.views.NewPopulationForm')
+    @patch('population.views.redirect')
+    def test_redirects_to_form_save_return_value(self, redirect_mock, form_class_mock):
+        form_object_mock = form_class_mock.return_value
+
+        custom_population(self.request)
+
+        redirect_mock.assert_called_once_with(
+            form_object_mock.save.return_value)

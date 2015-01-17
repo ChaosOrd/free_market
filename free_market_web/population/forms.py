@@ -1,5 +1,5 @@
 from django import forms
-from population.models import Population
+from population.models import Population, Universe
 
 EMPTY_NAME_ERROR = 'Population name can not be empty'
 EMPTY_QUANTITY_ERROR = 'Population quantity can not be empty'
@@ -28,5 +28,8 @@ class NewPopulationForm(forms.ModelForm):
         }
 
     def save(self):
-        Population.create_new(name=self.cleaned_data['name'],
+        universe = Universe.create_new()
+        Population.create_new(universe=universe,
+                              name=self.cleaned_data['name'],
                               quantity=self.cleaned_data['quantity'])
+        return universe

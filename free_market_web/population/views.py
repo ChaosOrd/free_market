@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import NewPopulationForm
 
 
@@ -10,7 +10,8 @@ def custom_population(request):
     if request.method == 'POST':
         form = NewPopulationForm(data=request.POST)
         if form.is_valid():
-            form.save()
+            new_universe = form.save()
+            redirect(new_universe)
         return render(request, 'custom_population.html', {'form': form})
 
     form = NewPopulationForm()
