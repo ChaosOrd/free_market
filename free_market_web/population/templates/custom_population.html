@@ -2,16 +2,12 @@
   <head>
   </head>
   <body>
-  <form>
+    <form action="{% url 'custom_population' %}" method="post">
+      {% csrf_token %}
       <ul>
+        {{ form.as_ul }}
         <li>
-          <label for="id_input_name">Name</label>
-          <input type="textbox" id="id_input_name" value="Population1" tabindex="0" />
-        </li>
-        <li>
-          <label for="id_input_qty">Quantity</label>
-          <input type="textbox" id="id_input_qty" tabindex="1" />
-          <a href="#" id="save_pop">Save</a> 
+          <button id="id_save" type="submit" tabindex="2">Save</button>
         </li>
       </ul>
     </form>

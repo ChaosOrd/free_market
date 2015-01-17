@@ -10,16 +10,15 @@ var navigation = {
     }
 };
 
+$(document).ready(function() {
+    $('[tabindex=0]').focus();
+})
 
-$(document).ready(function () {
-    $('input[tabindex=0]').focus();
-    document.onkeypress=function(e) {
-        e = e || window.event;
-        var selected_tab_idx = document.activeElement.tabIndex;
-        if (e.which == 13 && navigation.IsTextBox($(document.activeElement)))
-        {
-            $('input[tabindex=' + (selected_tab_idx + 1) + ']').focus();
-        }
+$('input').keypress(function(e) {
+    if (e.which == 13)
+    {
+        var selected_tab_idx = e.currentTarget.tabIndex;
+        $('[tabindex=' + (selected_tab_idx + 1) + ']').focus();
+        e.preventDefault();
     }
 });
-

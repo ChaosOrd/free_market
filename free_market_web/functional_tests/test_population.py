@@ -12,17 +12,16 @@ class PopulationTest(FunctionalTest):
         self.browser.find_element_by_link_text('Custom population').click()
 
         # She sees an input box with a default population name
-        input_name_tb = self.browser.find_element_by_id('id_input_name')
-        self.assertEqual(input_name_tb.get_attribute('value'), 'Population1')
+        input_name_tb = self.browser.find_element_by_id('id_name')
 
         # The name text box is focused
         self.assertEqual(self.browser.switch_to_active_element(), input_name_tb)
-        # She decides to change its name and presses enter
-        input_name_tb.clear()
+
+        # She types a population name
         input_name_tb.send_keys('Farmers\n')
 
         # The next input box Yulia sees is the population quantity
-        input_qty_tb = self.browser.find_element_by_id('id_input_qty')
+        input_qty_tb = self.browser.find_element_by_id('id_quantity')
         self.assertEqual(input_qty_tb.text, '')
 
         # Since Yulia pressed enter in a previous element, now the quantity
@@ -33,7 +32,7 @@ class PopulationTest(FunctionalTest):
         input_qty_tb.send_keys('20')
 
         # Finally she presses the save link
-        self.browser.find_element_by_link_text('Save').click()
+        self.browser.find_element_by_id('id_save').click()
 
         # She sees the info of the population she previously created
         page_text = self.browser.find_element_by_tag_name('body')

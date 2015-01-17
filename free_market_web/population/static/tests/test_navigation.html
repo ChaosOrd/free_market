@@ -7,11 +7,11 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit_fixture">
-    <form>
-      <input type="textbox" id="id_first_tb" tabindex="2" />
-      <input type="textbox" id="id_second_tb" tabindex="3" />
-      <input type="button" id="id_btn" tabindex="4" />
-      <input type="textbox" id="some_other_input" tabindex="5" />
+    <form id="id_test_form" method="post">
+      <input type="textbox" id="id_first_tb" tabindex="0" />
+      <input type="textbox" id="id_second_tb" tabindex="1" />
+      <button type="submit" id="id_btn" tabindex="2">Submit</button>
+      <input type="textbox" id="some_other_input" tabindex="3" />
     </form>
   </div>
   <script src="http://code.jquery.com/jquery.min.js"></script>
@@ -19,12 +19,22 @@
   <script src="../navigation.js"></script>
   <script>
 
+$(document).ready(function() {
+  $('form').submit(function(e) {
+    e.preventDefault();
+  })
+});
+
 function press(key)
 {
-  var e = $.Event('keypress');
+  var e = $.Event('keypress')
   e.which = key;
   $(document.activeElement).trigger(e);
 }
+
+test("an item with tabindex 0 should be focused", function() {
+  equal(document.activeElement.id, 'id_first_tb');
+});
 
 test("enter should focus on next input if current input is text box", function() {
   $('#id_first_tb').focus();
@@ -46,8 +56,7 @@ test("IsTextbox should return false when given button element", function() {
   equal(navigation.IsTextBox($('#id_btn')), false);
 });
 
-test("enter key should not focus if current input is not text box", function()
-{
+test("enter key should not focus if current input is not text box", function() {
   $('#id_btn').focus();
   press(13);
   equal(document.activeElement.id, 'id_btn');

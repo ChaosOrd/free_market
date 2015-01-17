@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .forms import NewPopulationForm
 
 
 def home_page(request):
@@ -6,4 +7,11 @@ def home_page(request):
 
 
 def custom_population(request):
-    return render(request, 'custom_population.html')
+    if request.method == 'POST':
+        form = NewPopulationForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+        return render(request, 'custom_population.html', {'form': form})
+
+    form = NewPopulationForm()
+    return render(request, 'custom_population.html', {'form': form})
