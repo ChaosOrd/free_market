@@ -2,7 +2,7 @@
   <head>
   </head>
   <body>
-    <form action="{% url 'custom_population' %}" method="post">
+    <form action="{% url 'new_universe' %}" method="post">
       {% csrf_token %}
       <ul>
         {{ form.as_ul }}

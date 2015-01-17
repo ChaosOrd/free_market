@@ -9,8 +9,8 @@ class CreateBasicPopulationTest(FunctionalTest):
         # and decided to try it out
         self.browser.get(self.server_url)
 
-        # She sees the custom polulation link and decides to give it a try
-        self.browser.find_element_by_link_text('Custom population').click()
+        # She sees the custom new universe link and decides to give it a try
+        self.browser.find_element_by_link_text('New universe').click()
 
         # She sees an input box with a default population name
         input_name_tb = self.browser.find_element_by_id('id_name')
@@ -69,6 +69,7 @@ class CreateBasicPopulationTest(FunctionalTest):
 
         # Pavel enters the site and creates his population'
         self.browser.get(self.server_url)
+        self.browser.find_element_by_link_text('New universe').click()
         self.browser.find_element_by_id('id_name').send_keys('Smart guys\n')
         self.browser.find_element_by_id('id_quantity').send_keys('4')
         self.browser.find_element_by_id('id_save').click()

@@ -8,6 +8,6 @@ urlpatterns = patterns('',
 
     #url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'population.views.home_page', name='home'),
-    url(r'^custom_population/$', 'population.views.custom_population',
-        name='custom_population'),
+    url(r'^new_universe/$', 'population.views.new_universe',
+        name='new_universe'),
 )
