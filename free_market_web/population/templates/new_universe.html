@@ -1,17 +1,4 @@
-<html>
-  <head>
-  </head>
-  <body>
-    <form action="{% url 'new_universe' %}" method="post">
-      {% csrf_token %}
-      <ul>
-        {{ form.as_ul }}
-        <li>
-          <button id="id_save" type="submit" tabindex="2">Save</button>
-        </li>
-      </ul>
-    </form>
-  </body>
-  <script src="http://code.jquery.com/jquery.min.js"></script>
-  <script src="../static/navigation.js"></script>
-</html>
+{% extends "base_universe.html" %}
+{% block title %}New universe{% endblock %}
+{% block content %}
+{% endblock %}

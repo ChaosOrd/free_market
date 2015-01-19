@@ -35,7 +35,7 @@ class CreateBasicPopulationTest(FunctionalTest):
         self.browser.find_element_by_id('id_save').click()
 
         # She sees the info of the population she previously created
-        page_text = self.browser.find_element_by_tag_name('body')
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Farmers', page_text)
         self.assertIn('20', page_text)
 
@@ -49,7 +49,7 @@ class CreateBasicPopulationTest(FunctionalTest):
         # The next text box is still automatically being focused after sher
         # pressed enter key. She types the population quantity
         self.assertEqual(self.browser.switch_to_active_element(), input_qty_tb)
-        input_qty_tb.send_keys('50')
+        input_qty_tb.send_keys('50\n')
 
         # The save button is still there and it is focused
         save_btn = self.browser.find_element_by_id('id_save')
@@ -57,7 +57,7 @@ class CreateBasicPopulationTest(FunctionalTest):
         save_btn.send_keys('\n')
 
         # The first population is still there along with the second
-        page_text = self.browser.find_element_by_tag_name('body')
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Farmers', page_text)
         self.assertIn('20', page_text)
         self.assertIn('Miners', page_text)

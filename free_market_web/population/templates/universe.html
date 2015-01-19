@@ -1,0 +1,12 @@
+{% extends "base_universe.html" %}
+{% block title %}Universe{% endblock %}
+{% block content %}
+  {% for pop in universe.population_set.all %}
+  <ul>
+    <li>
+      Name: {{ pop.name }}
+      Quantity: {{ pop.quantity }}
+    </li>
+  </ul>
+  {% endfor %}
+{% endblock %}

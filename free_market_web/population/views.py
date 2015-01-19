@@ -20,6 +20,6 @@ def new_universe(request):
 
 def universe(request, universe_id):
     form = NewPopulationForm()
-    universe = Universe.get(universe_id=universe_id)
+    universe = Universe.objects.get(id=universe_id)
     return render(request, 'universe.html', {'form': form,
                                              'universe': universe})
