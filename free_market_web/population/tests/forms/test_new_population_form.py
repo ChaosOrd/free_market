@@ -20,11 +20,25 @@ class TestNewItemForm(TestCase):
 
     @patch('population.forms.Universe')
     @patch('population.forms.Population')
-    def test_save_returns_new_universe(self, population, universe):
+    def test_save_returns_new_universe_if_no_universe_passed(
+        self, population, universe
+    ):
         new_pop_form = NewPopulationForm(data={'name': 'Farmers',
                                                'quantity': '100'})
         new_pop_form.is_valid()
         self.assertEqual(new_pop_form.save(), universe.create_new.return_value)
+
+    @patch('population.forms.Universe')
+    @patch('population.forms.Population')
+    def test_save_returns_existing_universe_if_universe_pased(self, population_cls, universe_cls):
+        universe_obj = universe_cls.objects.get.return_value
+        new_pop_form = NewPopulationForm(data={'name': 'Farmers',
+                                               'quantity': '100'})
+        new_pop_form.is_valid()
+        returned_universe = new_pop_form.save(for_universe=1)
+
+        universe_cls.objects.get.assert_called_once_with(id=1)
+        self.assertEqual(returned_universe, universe_obj)
 
     def test_form_validation_for_blank_name(self):
         new_pop_form = NewPopulationForm(data={'name': '',

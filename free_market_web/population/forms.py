@@ -27,8 +27,12 @@ class NewPopulationForm(forms.ModelForm):
             }),
         }
 
-    def save(self):
-        universe = Universe.create_new()
+    def save(self, for_universe=None):
+        if for_universe is None:
+            universe = Universe.create_new()
+        else:
+            universe = Universe.objects.get(id=for_universe)
+
         Population.create_new(universe=universe,
                               name=self.cleaned_data['name'],
                               quantity=self.cleaned_data['quantity'])

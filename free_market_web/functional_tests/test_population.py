@@ -76,8 +76,8 @@ class CreateBasicPopulationTest(FunctionalTest):
 
         # He sees the population he created and does not sees Yulias
         # populations
-        page_text = self.browser.find_elements_by_tag_name('body')
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Smart guys', page_text)
-        self.assertIn('4')
+        self.assertIn('4', page_text)
         self.assertNotIn('Farmers', page_text)
         self.assertNotIn('Miners', page_text)

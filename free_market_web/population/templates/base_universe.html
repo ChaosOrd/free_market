@@ -3,7 +3,7 @@
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-  <form action="#" method="post">
+  <form action="{% block form_action %}{% endblock %}" method="post">
     {% csrf_token %}
     <ul>
       {{ form.as_ul }}
