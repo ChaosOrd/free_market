@@ -33,13 +33,26 @@ class CustomPopulationTest(TestCase):
         form_object_mock.save.assert_called_once_with()
 
     @patch('population.views.NewPopulationForm')
-    def test_does_not_save_if_form_is_not_valid(self, form_class_mock):
+    @patch('population.views.render')
+    def test_does_not_save_if_form_is_not_valid(self, render_mock, form_class_mock):
         form_object_mock = form_class_mock.return_value
         form_object_mock.is_valid.return_value = False
 
         new_universe(self.request)
 
         self.assertFalse(form_object_mock.save.called)
+
+    @patch('population.views.NewPopulationForm')
+    @patch('population.views.render')
+    def test_passes_form_to_template_if_form_invalid(self, render_mock, form_class_mock):
+        form_object_mock = form_class_mock.return_value
+        form_object_mock.is_valid.return_value = False
+
+        new_universe(self.request)
+
+        form_class_mock.assert_called_once_with(data=self.request.POST)
+        render_mock.assert_called_once_with(self.request, 'new_universe.html',
+                                            {'form': form_object_mock})
 
     @patch('population.views.NewPopulationForm')
     @patch('population.views.render')

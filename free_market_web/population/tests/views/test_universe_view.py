@@ -53,13 +53,29 @@ class TestUniverseView(TestCase):
 
         redirect_mock.assert_called_once_with(form_obj.save.return_value)
 
-
     @patch('population.views.Universe')
+    @patch('population.views.render')
     @patch('population.views.NewPopulationForm')
-    def test_does_not_save_if_form_is_invalid(self, form_cls, universe_cls):
+    def test_does_not_save_if_form_is_invalid(self, form_cls, render_mock, universe_mock):
         form_obj = form_cls.return_value
         form_obj.is_valid.return_value = False
 
         universe(self.request, 1)
 
         self.assertFalse(form_obj.save.called)
+
+    @patch('population.views.Universe')
+    @patch('population.views.NewPopulationForm')
+    @patch('population.views.render')
+    def test_passes_form_to_template_if_form_invalid(self, render_mock, form_class_mock, universe_cls_mock):
+        form_object_mock = form_class_mock.return_value
+        form_object_mock.is_valid.return_value = False
+        universe_obj_mock = universe_cls_mock.objects.get.return_value
+
+        universe(self.request, 2)
+
+        universe_cls_mock.objects.get.assert_called_once_with(id=2)
+        form_class_mock.assert_called_once_with(data=self.request.POST)
+        render_mock.assert_called_once_with(self.request, 'universe.html',
+                                            {'form': form_object_mock,
+                                             'universe': universe_obj_mock})

@@ -6,7 +6,14 @@
   <form action="{% block form_action %}{% endblock %}" method="post">
     {% csrf_token %}
     <ul>
-      {{ form.as_ul }}
+      {% for field in form %}
+      <li>
+        {{ field }}
+        {% if field.errors %}
+          {{ field.errors|striptags }}
+        {% endif %}
+      </li>
+      {% endfor %}
       <li>
         <button id="id_save" type="submit" tabindex="2">Save</button>
       </li>

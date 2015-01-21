@@ -20,7 +20,7 @@ class PopCreationValidationErrorsTest(FunctionalTest):
 
         # The number she entered earlier still presents
         qty_tb = self.browser.find_element_by_id('id_quantity')
-        self.assertEqual(qty_tb.get_attribute('text'), '50')
+        self.assertEqual(qty_tb.get_attribute('value'), '50')
 
         # She gives it some name
         self.browser.find_element_by_id('id_name').send_keys('Loosers\n')
@@ -42,6 +42,10 @@ class PopCreationValidationErrorsTest(FunctionalTest):
         text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Population quantity can not be empty', text)
 
+        # The name she entered earlier still presents
+        name_tb = self.browser.find_element_by_id('id_name')
+        self.assertEqual(name_tb.get_attribute('value'), 'Rich people')
+
         # She puts some nonsence instead of the number
         name_tb = self.browser.find_element_by_id('id_quantity')
         name_tb.send_keys('blablabla\n')
@@ -53,6 +57,7 @@ class PopCreationValidationErrorsTest(FunctionalTest):
 
         # Finally she gets it right and enters a number
         qty_tb = self.browser.find_element_by_id('id_quantity')
+        qty_tb.clear()
         qty_tb.send_keys('3\n')
 
         self.browser.find_element_by_id('id_save').click()

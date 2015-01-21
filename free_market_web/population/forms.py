@@ -22,7 +22,7 @@ class NewPopulationForm(forms.ModelForm):
             'name': forms.fields.TextInput(attrs={
                 'tabindex': '0',
             }),
-            'quantity': forms.fields.NumberInput(attrs={
+            'quantity': forms.fields.TextInput(attrs={
                 'tabindex': '1',
             }),
         }
