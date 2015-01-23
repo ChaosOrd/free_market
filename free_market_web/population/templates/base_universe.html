@@ -6,17 +6,23 @@
   <form action="{% block form_action %}{% endblock %}" method="post">
     {% csrf_token %}
     <ul>
-      {% for field in form %}
-      <li>
-        {{ field }}
-        {% if field.errors %}
-          {{ field.errors|striptags }}
-        {% endif %}
-      </li>
-      {% endfor %}
-      <li>
-        <button id="id_save" type="submit" tabindex="2">Save</button>
-      </li>
+        {% for field in form %}
+            <li>
+                {{ field }}
+                {% if field.errors %}
+                    {{ field.errors|striptags }}
+                {% endif %}
+            </li>
+        {% endfor %}
+        <li>
+            <a href="#">Add consumption</a>
+        </li>
+        <li>
+            <a href="#">Add production</a>
+        </li>
+        <li>
+            <button id="id_save" type="submit" tabindex="2">Save</button>
+        </li>
     </ul>
   </form>
   {% block content %}

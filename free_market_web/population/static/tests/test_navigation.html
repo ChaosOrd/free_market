@@ -14,11 +14,11 @@
       <input type="textbox" id="some_other_input" tabindex="3" />
     </form>
   </div>
-  <script src="http://code.jquery.com/jquery.min.js"></script>
-  <script src="../../../free_market_web/static/tests/qunit.js"></script>
-  <script src="../navigation.js"></script>
-  <script>
-
+</body>
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="../../../free_market_web/static/tests/qunit.js"></script>
+<script src="../navigation.js"></script>
+<script>
 $(document).ready(function() {
   $('form').submit(function(e) {
     e.preventDefault();
@@ -61,5 +61,5 @@ test("enter key should not focus if current input is not text box", function() {
   press(13);
   equal(document.activeElement.id, 'id_btn');
 });
-  </script>
+</script>
 </html>

@@ -16,7 +16,7 @@ class CreateBasicPopulationTest(FunctionalTest):
         input_name_tb = self.browser.find_element_by_id('id_name')
 
         # The name text box is focused
-        self.assertEqual(self.browser.switch_to_active_element(), input_name_tb)
+        self.assertEqual(self.browser.switch_to.active_element, input_name_tb)
 
         # She types a population name
         input_name_tb.send_keys('Farmers\n')
@@ -26,7 +26,7 @@ class CreateBasicPopulationTest(FunctionalTest):
 
         # Since Yulia pressed enter in a previous element, now the quantity
         # text box is focused
-        self.assertEqual(self.browser.switch_to_active_element(), input_qty_tb)
+        self.assertEqual(self.browser.switch_to.active_element, input_qty_tb)
 
         # She types a small number and since she pressed enter in a previous
         input_qty_tb.send_keys('20')
@@ -42,18 +42,18 @@ class CreateBasicPopulationTest(FunctionalTest):
         # The input form is still present so she decides to add another pop
         input_name_tb = self.browser.find_element_by_id('id_name')
         # The name textbox is focused
-        self.assertEqual(self.browser.switch_to_active_element(), input_name_tb)
+        self.assertEqual(self.browser.switch_to.active_element, input_name_tb)
         input_name_tb.send_keys('Miners\n')
         input_qty_tb = self.browser.find_element_by_id('id_quantity')
 
         # The next text box is still automatically being focused after sher
         # pressed enter key. She types the population quantity
-        self.assertEqual(self.browser.switch_to_active_element(), input_qty_tb)
+        self.assertEqual(self.browser.switch_to.active_element, input_qty_tb)
         input_qty_tb.send_keys('50\n')
 
         # The save button is still there and it is focused
         save_btn = self.browser.find_element_by_id('id_save')
-        self.assertEqual(self.browser.switch_to_active_element(), save_btn)
+        self.assertEqual(self.browser.switch_to.active_element, save_btn)
         save_btn.send_keys('\n')
 
         # The first population is still there along with the second
@@ -74,7 +74,7 @@ class CreateBasicPopulationTest(FunctionalTest):
         self.browser.find_element_by_id('id_quantity').send_keys('4')
         self.browser.find_element_by_id('id_save').click()
 
-        # He sees the population he created and does not sees Yulias
+        # He sees the population he created and does not sees Yulia's
         # populations
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Smart guys', page_text)

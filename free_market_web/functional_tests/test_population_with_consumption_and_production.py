@@ -5,7 +5,7 @@ class CreateBasicPopulationTest(FunctionalTest):
 
     def test_can_create_a_population_with_demand_and_get_see_it_later(self):
         # Yulia have decided to create a universe with populations
-        # that actually have demads and supplies
+        # that actually have consumption and production
 
         self.browser.get(self.server_url)
         self.browser.find_element_by_link_text('New universe').click()
@@ -29,7 +29,7 @@ class CreateBasicPopulationTest(FunctionalTest):
 
         # The consumption value input box became focused
         cons_val_tb = self.browser.find_element_by_id('id_consumption_val_0')
-        self.assertEqual(self.browser.switch_to_active_element(), cons_val_tb)
+        self.assertEqual(self.browser.switch_to.active_element, cons_val_tb)
 
         # She inserts the consumption value
         cons_val_tb.send_keys('4\n')
@@ -49,7 +49,7 @@ class CreateBasicPopulationTest(FunctionalTest):
 
         # The consumption value input box became focused
         cons_val_tb = self.browser.find_element_by_id('id_consumption_val_1')
-        self.assertEqual(self.browser.switch_to_active_element(), cons_val_tb)
+        self.assertEqual(self.browser.switch_to.active_element, cons_val_tb)
 
         # She inserts the consumption value
         cons_val_tb.send_keys('10\n')
