@@ -16,3 +16,7 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         super().tearDown()
         self.browser.quit()
+
+    def assert_element_does_not_exist(self, element_id):
+        element = self.browser.find_element_by_name(element_id)
+        self.assertIs(None, element)
