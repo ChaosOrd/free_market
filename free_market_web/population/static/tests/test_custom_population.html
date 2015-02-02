@@ -7,16 +7,62 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit_fixture">
-    <form>
-      <input type="textbox" id="id_first_tb" tabindex="2" />
-      <input type="textbox" id="id_second_tb" tabindex="3" />
-      <input type="button" id="id_btn" tabindex="4" />
-      <input type="textbox" id="some_other_input" tabindex="5" />
+    <div id="prototypes">
+      <input type="textbox" id="supply" />
+      <input type="textbox" id="demand" />
+    </div>
+    <form name="universe_form">
+      <a id="add_supply" href="#">Add supply</a>
+      <a id="add_demand" href="#">Add demand</a>
+      <div id="supplies">
+      </div>
+      <div id="demands">
+      </div>
     </form>
   </div>
   <script src="http://code.jquery.com/jquery.min.js"></script>
   <script src="../../../free_market_web/static/tests/qunit.js"></script>
-  <script src="../navigation.js"></script>
-  <script></script>
+  <script src="../custom_population.js"></script>
+  <script>
+
+module("custom population", {
+  afterEach: function() {
+    $('#supplies').html("");
+    $('#demands').html("");
+  }
+})
+
+test("clicking on add_supply should add a supply text input", function() {
+  $('#add_supply').trigger("click");
+  
+  equal($("#supplies input").length, 1);
+  equal($("#supplies input:eq(0)").attr("id"), "supply")
+});
+
+test("clicking on add_supply twice should add 2 supply elements", function() {
+  $('#add_supply').trigger("click");
+  $('#add_supply').trigger("click");
+
+  equal($("#supplies input").length, 2);
+  equal($("#supplies input:eq(0)").attr("id"), "supply")
+  equal($("#supplies input:eq(1)").attr("id"), "supply")
+});
+
+test("clicking on add_demand should add a demand text input", function() {
+  $('#add_demand').trigger("click");
+  
+  equal($("#demands input").length, 1);
+  equal($("#demands input:eq(0)").attr("id"), "demand")
+});
+
+test("clicking on add_demand twice should add 2 demand elements", function() {
+  $('#add_demand').trigger("click");
+  $('#add_demand').trigger("click");
+
+  equal($("#demands input").length, 2);
+  equal($("#demands input:eq(0)").attr("id"), "demand")
+  equal($("#demands input:eq(1)").attr("id"), "demand")
+});
+  </script>
 </body>
 </html>
