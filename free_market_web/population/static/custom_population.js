@@ -1,10 +1,29 @@
 
+var CustomPopulation = {
+    addToSupply: function (data)
+    {
+        $('#supplies').append(data);
+    },
+    addToDemand: function (data)
+    {
+        $('#demands').append(data);
+    }
+};
+
 $(document).ready(function() {
     $("#add_demand").click( function () {
-        $("#demands").append($("#prototypes #demand").clone());
+        $.ajax({
+            url: 'resource_form',
+            type: 'get',
+            success: CustomPopulation.addToDemand
+        });
     })
 
     $("#add_supply").click( function () {
-        $("#supplies").append($("#prototypes #supply").clone());
+        $.ajax({
+            url: 'resource_form',
+            type: 'get',
+            success: CustomPopulation.addToSupply
+        });
     })
 })

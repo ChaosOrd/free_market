@@ -37,3 +37,6 @@ class NewPopulationForm(forms.ModelForm):
                               name=self.cleaned_data['name'],
                               quantity=self.cleaned_data['quantity'])
         return universe
+
+class ResourceForm(forms.ModelForm):
+    pass

@@ -7,10 +7,6 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit_fixture">
-    <div id="prototypes">
-      <input type="textbox" id="supply" />
-      <input type="textbox" id="demand" />
-    </div>
     <form name="universe_form">
       <a id="add_supply" href="#">Add supply</a>
       <a id="add_demand" href="#">Add demand</a>
@@ -22,46 +18,57 @@
   </div>
   <script src="http://code.jquery.com/jquery.min.js"></script>
   <script src="../../../free_market_web/static/tests/qunit.js"></script>
+  <script src="../../../free_market_web/static/tests/sinon.js"></script>
   <script src="../custom_population.js"></script>
   <script>
 
 module("custom population", {
+  beforeEach: function() {
+    sinon.spy(jQuery, 'ajax');
+  },
   afterEach: function() {
-    $('#supplies').html("");
-    $('#demands').html("");
+    jQuery.ajax.restore();
+    $('#supplies').html('');
   }
 })
 
-test("clicking on add_supply should add a supply text input", function() {
+test("clicking on add supply should make an ajax request", function() {
   $('#add_supply').trigger("click");
   
-  equal($("#supplies input").length, 1);
-  equal($("#supplies input:eq(0)").attr("id"), "supply")
+
+  equal(true, jQuery.ajax.calledWithMatch({
+    url: 'resource_form',
+    type: 'get',
+    success: CustomPopulation.addToSupply
+    })
+  );
 });
 
-test("clicking on add_supply twice should add 2 supply elements", function() {
-  $('#add_supply').trigger("click");
-  $('#add_supply').trigger("click");
-
-  equal($("#supplies input").length, 2);
-  equal($("#supplies input:eq(0)").attr("id"), "supply")
-  equal($("#supplies input:eq(1)").attr("id"), "supply")
-});
-
-test("clicking on add_demand should add a demand text input", function() {
+test("clicking on add demand should make an ajax request", function() {
   $('#add_demand').trigger("click");
   
-  equal($("#demands input").length, 1);
-  equal($("#demands input:eq(0)").attr("id"), "demand")
+  equal(true, jQuery.ajax.calledWithMatch({
+    url: 'resource_form',
+    type: 'get',
+    success: CustomPopulation.addToDemand
+    })
+  );
 });
 
-test("clicking on add_demand twice should add 2 demand elements", function() {
-  $('#add_demand').trigger("click");
-  $('#add_demand').trigger("click");
+test('CustomPopulation.addToSupply adds contend to supply div', function() {
+  $('#supplies').html('before add ')
 
-  equal($("#demands input").length, 2);
-  equal($("#demands input:eq(0)").attr("id"), "demand")
-  equal($("#demands input:eq(1)").attr("id"), "demand")
+  CustomPopulation.addToSupply('after add');
+
+  equal($('#supplies').html(), 'before add after add');
+});
+
+test('CustomPopulation.addToDemand adds contend to demand div', function() {
+  $('#demands').html('before add ')
+
+  CustomPopulation.addToDemand('after add');
+
+  equal($('#demands').html(), 'before add after add');
 });
   </script>
 </body>
