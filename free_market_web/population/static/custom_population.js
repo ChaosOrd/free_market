@@ -1,29 +1,17 @@
 
 var CustomPopulation = {
-    addToSupply: function (data)
+    addToSupplyDemand: function (data)
     {
-        $('#supplies').append(data);
-    },
-    addToDemand: function (data)
-    {
-        $('#demands').append(data);
+        $('#supplies_demands').append(data);
     }
 };
 
 $(document).ready(function() {
-    $("#add_demand").click( function () {
+    $("#add_supply_demand").click( function () {
         $.ajax({
-            url: 'resource_form',
+            url: 'supply_demand_form',
             type: 'get',
-            success: CustomPopulation.addToDemand
-        });
-    })
-
-    $("#add_supply").click( function () {
-        $.ajax({
-            url: 'resource_form',
-            type: 'get',
-            success: CustomPopulation.addToSupply
+            success: CustomPopulation.addToSupplyDemand
         });
     })
 })

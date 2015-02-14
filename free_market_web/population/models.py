@@ -15,8 +15,8 @@ class Universe(models.Model):
 class Population(models.Model):
 
     universe = models.ForeignKey(Universe)
-    name = models.TextField()
-    quantity = models.IntegerField()
+    name = models.TextField(verbose_name='name')
+    quantity = models.IntegerField(verbose_name='quantity')
 
     @staticmethod
     def create_new(universe, name, quantity):

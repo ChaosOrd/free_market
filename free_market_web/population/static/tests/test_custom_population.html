@@ -8,11 +8,8 @@
   <div id="qunit"></div>
   <div id="qunit_fixture">
     <form name="universe_form">
-      <a id="add_supply" href="#">Add supply</a>
-      <a id="add_demand" href="#">Add demand</a>
-      <div id="supplies">
-      </div>
-      <div id="demands">
+      <a id="add_supply_demand" href="#">Add supply/demand</a>
+      <div id="supplies_demands">
       </div>
     </form>
   </div>
@@ -28,47 +25,28 @@ module("custom population", {
   },
   afterEach: function() {
     jQuery.ajax.restore();
-    $('#supplies').html('');
+    $('#supplies_demands').html('');
   }
 })
 
-test("clicking on add supply should make an ajax request", function() {
-  $('#add_supply').trigger("click");
+test("clicking on add_supply_demand should make an ajax request", function() {
+  $('#add_supply_demand').trigger("click");
   
 
   equal(true, jQuery.ajax.calledWithMatch({
-    url: 'resource_form',
+    url: 'supply_demand_form',
     type: 'get',
-    success: CustomPopulation.addToSupply
+    success: CustomPopulation.addToSupplyDemand
     })
   );
 });
 
-test("clicking on add demand should make an ajax request", function() {
-  $('#add_demand').trigger("click");
-  
-  equal(true, jQuery.ajax.calledWithMatch({
-    url: 'resource_form',
-    type: 'get',
-    success: CustomPopulation.addToDemand
-    })
-  );
-});
+test('CustomPopulation.addToSupplyDemand adds contend to supply div', function() {
+  $('#supplies_demands').html('before add ')
 
-test('CustomPopulation.addToSupply adds contend to supply div', function() {
-  $('#supplies').html('before add ')
+  CustomPopulation.addToSupplyDemand('after add');
 
-  CustomPopulation.addToSupply('after add');
-
-  equal($('#supplies').html(), 'before add after add');
-});
-
-test('CustomPopulation.addToDemand adds contend to demand div', function() {
-  $('#demands').html('before add ')
-
-  CustomPopulation.addToDemand('after add');
-
-  equal($('#demands').html(), 'before add after add');
+  equal($('#supplies_demands').html(), 'before add after add');
 });
   </script>
 </body>

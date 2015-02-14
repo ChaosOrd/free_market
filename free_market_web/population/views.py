@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import NewPopulationForm, ResourceForm
+from .forms import NewPopulationForm, SupplyDemandForm
 from population.models import Universe
 
 
@@ -31,6 +31,6 @@ def universe(request, universe_id):
                                              'universe': universe})
 
 
-def resource_form(request):
-    form = ResourceForm()
-    return render(request, 'resource_form.html', {'form': form})
+def supply_demand_form(request):
+    form = SupplyDemandForm()
+    return render(request, 'supply_demand_form.html', {'form': form})

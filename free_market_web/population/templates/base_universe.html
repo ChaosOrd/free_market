@@ -8,10 +8,10 @@
     <ul>
         {% for field in form %}
             <li>
-                {{ field }}
-                {% if field.errors %}
-                    {{ field.errors|striptags }}
-                {% endif %}
+              {{ field.label_tag }}{{ field }}
+              {% if field.errors %}
+                {{ field.errors|striptags }}
+              {% endif %}
             </li>
         {% endfor %}
         <li>

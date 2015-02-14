@@ -12,6 +12,10 @@ class NewPopulationForm(forms.ModelForm):
         model = Population
         fields = ('name', 'quantity',)
 
+        labels = {
+            'name': 'Name', 'quantity': 'Quantity'
+        }
+
         error_messages = {
             'name': {'required': EMPTY_NAME_ERROR},
             'quantity': {'required': EMPTY_QUANTITY_ERROR,
@@ -20,10 +24,10 @@ class NewPopulationForm(forms.ModelForm):
 
         widgets = {
             'name': forms.fields.TextInput(attrs={
-                'tabindex': '0',
+                'tabindex': '0', 'title': 'Name',
             }),
             'quantity': forms.fields.TextInput(attrs={
-                'tabindex': '1',
+                'tabindex': '1', 'title': 'Quantity',
             }),
         }
 
@@ -38,5 +42,6 @@ class NewPopulationForm(forms.ModelForm):
                               quantity=self.cleaned_data['quantity'])
         return universe
 
-class ResourceForm(forms.ModelForm):
+
+class SupplyDemandForm(forms.ModelForm):
     pass
