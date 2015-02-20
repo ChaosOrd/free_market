@@ -1,6 +1,6 @@
 from django.http.request import HttpRequest
 from django.test import TestCase
-from population.views import universe
+from population.views import ExistingUniverseView
 from unittest.mock import patch
 
 
@@ -8,7 +8,7 @@ class TestUniverseView(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
-        self.request.method = 'POST'
+        self.universe_view = ExistingUniverseView()
 
     @patch('population.views.NewPopulationForm')
     @patch('population.views.Universe')
@@ -16,11 +16,10 @@ class TestUniverseView(TestCase):
     def test_get_request_renderes_universe_template_with_universe_and_form(
         self, render, universe_cls, population_form_cls
     ):
-        self.request.method = 'GET'
         universe_obj = universe_cls.objects.get.return_value
         form_obj = population_form_cls.return_value
 
-        universe(self.request, 1)
+        self.universe_view.get(self.request, 1)
 
         universe_cls.objects.get.assert_called_once_with(id=1)
         render.assert_called_once_with(self.request, 'universe.html', {
@@ -29,8 +28,7 @@ class TestUniverseView(TestCase):
 
     @patch('population.views.NewPopulationForm')
     def test_post_passes_POST_data_to_form(self, form_cls):
-
-        universe(self.request, 1)
+        self.universe_view.post(self.request, 1)
 
         form_cls.assert_called_once_with(data=self.request.POST)
 
@@ -39,7 +37,7 @@ class TestUniverseView(TestCase):
         form_obj = form_cls.return_value
         form_obj.is_valid.return_value = True
 
-        universe(self.request, 1)
+        self.universe_view.post(self.request, 1)
 
         form_obj.save.assert_called_once_with(for_universe=1)
 
@@ -49,7 +47,7 @@ class TestUniverseView(TestCase):
         form_obj = form_cls.return_value
         form_obj.is_valid.return_value = True
 
-        universe(self.request, 1)
+        self.universe_view.post(self.request, 1)
 
         redirect_mock.assert_called_once_with(form_obj.save.return_value)
 
@@ -60,7 +58,7 @@ class TestUniverseView(TestCase):
         form_obj = form_cls.return_value
         form_obj.is_valid.return_value = False
 
-        universe(self.request, 1)
+        self.universe_view.post(self.request, 1)
 
         self.assertFalse(form_obj.save.called)
 
@@ -72,7 +70,7 @@ class TestUniverseView(TestCase):
         form_object_mock.is_valid.return_value = False
         universe_obj_mock = universe_cls_mock.objects.get.return_value
 
-        universe(self.request, 2)
+        self.universe_view.post(self.request, 2)
 
         universe_cls_mock.objects.get.assert_called_once_with(id=2)
         form_class_mock.assert_called_once_with(data=self.request.POST)

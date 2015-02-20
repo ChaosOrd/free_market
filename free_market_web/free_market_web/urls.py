@@ -8,7 +8,5 @@ urlpatterns = patterns('',
 
     #url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'population.views.home_page', name='home'),
-    url(r'^new_universe/$', 'population.views.new_universe',
-        name='new_universe'),
-    url(r'^universe/(\d+)/$', 'population.views.universe', name='universe')
+    url(r'^population/', include('population.urls')),
 )
