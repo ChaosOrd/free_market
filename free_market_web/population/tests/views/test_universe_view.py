@@ -1,7 +1,7 @@
 from django.http.request import HttpRequest
 from django.test import TestCase
 from population.views import ExistingUniverseView
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 class TestUniverseView(TestCase):
@@ -32,6 +32,19 @@ class TestUniverseView(TestCase):
 
         form_cls.assert_called_once_with(data=self.request.POST)
 
+    @patch('population.views.SupplyDemandForm')
+    @patch('population.views.NewPopulationForm')
+    def test_post_passes_supply_and_demmand_to_forms(self, population_form_cls, sp_form_cls):
+        first_sp_post_data = Mock()
+        second_sp_post_data = Mock()
+        self.request.POST['SupplyDemand'] = \
+            [first_sp_post_data, second_sp_post_data]
+
+        self.universe_view.post(self.request, 1)
+
+        sp_form_cls.assert_called_with(data=self.request.POST)
+        sp_form_cls.assert_called_with(data=self.request.POST)
+
     @patch('population.views.NewPopulationForm')
     def test_saves_form_if_valid(self, form_cls):
         form_obj = form_cls.return_value
@@ -40,6 +53,27 @@ class TestUniverseView(TestCase):
         self.universe_view.post(self.request, 1)
 
         form_obj.save.assert_called_once_with(for_universe=1)
+
+    @patch('population.views.SupplyDemandForm')
+    @patch('population.views.NewPopulationForm')
+    def test_saves_sp_forms_if_valid(self, population_form_cls, sp_form_cls):
+        first_sp_post_data = Mock()
+        second_sp_post_data = Mock()
+        self.request.POST['SupplyDemand'] = \
+            [first_sp_post_data, second_sp_post_data]
+        first_sp_form = Mock()
+        second_sp_form = Mock()
+        sp_form_cls.side_effect = [first_sp_form, second_sp_form]
+        form_obj = population_form_cls.return_value
+        form_obj.is_valid.return_value = True
+        first_sp_form.is_valid.return_value = True
+        second_sp_form.is_valid.return_value = True
+
+        self.universe_view.post(self.request, 1)
+
+        form_obj.save.assert_called_once_with(
+            for_univers=1, supply_demand_forms=[first_sp_form, second_sp_form])
+
 
     @patch('population.views.redirect')
     @patch('population.views.NewPopulationForm')

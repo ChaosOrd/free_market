@@ -22,6 +22,11 @@ class ExistingUniverseView(View):
     def post(self, request, universe_id):
         form = NewPopulationForm(data=request.POST)
         if form.is_valid():
+            if 'SupplyDemand' in request.POST:
+                sp_forms = []
+                for sp_data in request.POST['SupplyDemand']:
+                    sp_forms.append(SupplyDemandForm(data=request.POST))
+
             return redirect(form.save(for_universe=universe_id))
         else:
             return self._render_universe(request, universe_id, form)

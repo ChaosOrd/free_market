@@ -12,4 +12,4 @@ class TestUniverseModel(TestCase):
     def test_get_absolute_url(self):
         universe = Universe.objects.create()
         self.assertEqual(universe.get_absolute_url(),
-                         '/universe/%d/' % universe.id)
+                         '/population/universe/%d/' % universe.id)

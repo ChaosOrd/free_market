@@ -1,7 +1,6 @@
 from django.http.request import HttpRequest
 from django.test import TestCase
 from unittest.mock import patch
-from population.views import new_universe
 from population.views import NewUniverseView
 
 
