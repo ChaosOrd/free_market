@@ -4,110 +4,152 @@ from population.views import ExistingUniverseView
 from unittest.mock import Mock, patch
 
 
-class TestUniverseView(TestCase):
+class TestBaseUniverseView(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
+        self.create_class_mocks()
+        self.create_instance_mocks()
+
+    def create_class_mocks(self):
         self.universe_view = ExistingUniverseView()
+        self.pop_form_patcher = patch('population.views.NewPopulationForm')
+        self.pop_form_cls = self.pop_form_patcher.start()
+        self.universe_patcher = patch('population.views.Universe')
+        self.universe_cls = self.universe_patcher.start()
+        self.sd_form_patcher = patch('population.views.SupplyDemandForm')
+        self.sd_form_cls = self.sd_form_patcher.start()
+        self.render_patcher = patch('population.views.render')
+        self.render_mock = self.render_patcher.start()
+        self.redirect_patcher = patch('population.views.redirect')
+        self.redirect_mock = self.redirect_patcher.start()
 
-    @patch('population.views.NewPopulationForm')
-    @patch('population.views.Universe')
-    @patch('population.views.render')
-    def test_get_request_renderes_universe_template_with_universe_and_form(
-        self, render, universe_cls, population_form_cls
-    ):
-        universe_obj = universe_cls.objects.get.return_value
-        form_obj = population_form_cls.return_value
+    def create_instance_mocks(self):
+        self.pop_form = self.pop_form_cls.return_value
+        self.first_sd_form = Mock()
+        self.second_sd_form = Mock()
+        self.sd_form_cls.side_effect = [self.first_sd_form, self.second_sd_form]
+        self.first_sd_post_data = Mock()
+        self.second_sd_post_data = Mock()
+        self.universe = self.universe_cls.objects.get.return_value
 
+    def tearDown(self):
+        self.tear_down_class_mocks()
+
+    def tear_down_class_mocks(self):
+        self.pop_form_patcher.stop()
+        self.universe_patcher.stop()
+        self.sd_form_patcher.stop()
+        self.render_patcher.stop()
+        self.redirect_patcher.stop()
+
+    def test_get_request_renderes_universe_template(self):
         self.universe_view.get(self.request, 1)
 
-        universe_cls.objects.get.assert_called_once_with(id=1)
-        render.assert_called_once_with(self.request, 'universe.html', {
-            'universe': universe_obj, 'form': form_obj
-        })
+        self.universe_cls.objects.get.assert_called_once_with(id=1)
+        self.render_mock.assert_called_once_with(
+            self.request, 'universe.html', {'universe': self.universe,
+                                            'form': self.pop_form})
 
-    @patch('population.views.NewPopulationForm')
-    def test_post_passes_POST_data_to_form(self, form_cls):
+    def test_post_passes_POST_data_to_form(self):
         self.universe_view.post(self.request, 1)
 
-        form_cls.assert_called_once_with(data=self.request.POST)
+        self.pop_form_cls.assert_called_once_with(data=self.request.POST)
 
-    @patch('population.views.SupplyDemandForm')
-    @patch('population.views.NewPopulationForm')
-    def test_post_passes_supply_and_demmand_to_forms(self, population_form_cls, sp_form_cls):
-        first_sp_post_data = Mock()
-        second_sp_post_data = Mock()
+    def test_post_passes_POST_data_to_sd_forms(self):
         self.request.POST['SupplyDemand'] = \
-            [first_sp_post_data, second_sp_post_data]
+            [self.first_sd_post_data, self.second_sd_post_data]
+        self.pop_form.is_valid.return_value = True
+        self.first_sd_form.is_valid.return_value = True
+        self.second_sd_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
-        sp_form_cls.assert_called_with(data=self.request.POST)
-        sp_form_cls.assert_called_with(data=self.request.POST)
+        self.sd_form_cls.assert_called_with(data=self.request.POST)
+        self.sd_form_cls.assert_called_with(data=self.request.POST)
 
-    @patch('population.views.NewPopulationForm')
-    def test_saves_form_if_valid(self, form_cls):
-        form_obj = form_cls.return_value
-        form_obj.is_valid.return_value = True
+    def test_saves_form_if_valid(self):
+        self.pop_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
-        form_obj.save.assert_called_once_with(for_universe=1)
+        self.pop_form.save.assert_called_once_with(for_universe=1,
+                                                   sd_forms=[])
 
-    @patch('population.views.SupplyDemandForm')
-    @patch('population.views.NewPopulationForm')
-    def test_saves_sp_forms_if_valid(self, population_form_cls, sp_form_cls):
-        first_sp_post_data = Mock()
-        second_sp_post_data = Mock()
+    def test_saves_pop_form_if_sd_forms_valid(self):
         self.request.POST['SupplyDemand'] = \
-            [first_sp_post_data, second_sp_post_data]
-        first_sp_form = Mock()
-        second_sp_form = Mock()
-        sp_form_cls.side_effect = [first_sp_form, second_sp_form]
-        form_obj = population_form_cls.return_value
-        form_obj.is_valid.return_value = True
-        first_sp_form.is_valid.return_value = True
-        second_sp_form.is_valid.return_value = True
+            [self.first_sd_post_data, self.second_sd_post_data]
+        self.pop_form.is_valid.return_value = True
+        self.first_sd_form.is_valid.return_value = True
+        self.second_sd_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
-        form_obj.save.assert_called_once_with(
-            for_univers=1, supply_demand_forms=[first_sp_form, second_sp_form])
+        self.pop_form.save.assert_called_once_with(
+            for_universe=1, sd_forms=[self.first_sd_form, self.second_sd_form])
 
-
-    @patch('population.views.redirect')
-    @patch('population.views.NewPopulationForm')
-    def test_redirects_to_form_return_value_if_form_valid(self, form_cls, redirect_mock):
-        form_obj = form_cls.return_value
-        form_obj.is_valid.return_value = True
+    def test_redirects_to_form_return_value_if_form_valid(self):
+        self.pop_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
-        redirect_mock.assert_called_once_with(form_obj.save.return_value)
+        self.redirect_mock.assert_called_once_with(
+            self.pop_form.save.return_value)
 
-    @patch('population.views.Universe')
-    @patch('population.views.render')
-    @patch('population.views.NewPopulationForm')
-    def test_does_not_save_if_form_is_invalid(self, form_cls, render_mock, universe_mock):
-        form_obj = form_cls.return_value
-        form_obj.is_valid.return_value = False
+    def test_redirects_to_pop_form_if_all_sd_forms_valid(self):
+        self.pop_form.is_valid.return_value = True
+        self.first_sd_form.is_valid.return_value = True
+        self.second_sd_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
-        self.assertFalse(form_obj.save.called)
+        self.redirect_mock.assert_called_once_with(
+            self.pop_form.save.return_value)
 
-    @patch('population.views.Universe')
-    @patch('population.views.NewPopulationForm')
-    @patch('population.views.render')
-    def test_passes_form_to_template_if_form_invalid(self, render_mock, form_class_mock, universe_cls_mock):
-        form_object_mock = form_class_mock.return_value
-        form_object_mock.is_valid.return_value = False
-        universe_obj_mock = universe_cls_mock.objects.get.return_value
+    def test_does_not_save_if_form_is_invalid(self):
+        self.pop_form.is_valid.return_value = False
+
+        self.universe_view.post(self.request, 1)
+
+        self.assertFalse(self.pop_form.save.called)
+
+    def test_does_not_save_if_sd_form_invalid(self):
+        self.request.POST['SupplyDemand'] = \
+            [self.first_sd_post_data, self.second_sd_post_data]
+        self.pop_form.is_valid.return_value = True
+        self.first_sd_form.is_valid.return_value = True
+        self.second_sd_form.is_valid.return_value = False
+
+        self.universe_view.post(self.request, 1)
+
+        self.assertFalse(self.pop_form.save.called)
+        self.assertFalse(self.first_sd_form.save.called)
+        self.assertFalse(self.second_sd_form.save.called)
+
+    def test_passes_form_to_template_if_form_invalid(self):
+        self.pop_form.is_valid.return_value = False
 
         self.universe_view.post(self.request, 2)
 
-        universe_cls_mock.objects.get.assert_called_once_with(id=2)
-        form_class_mock.assert_called_once_with(data=self.request.POST)
-        render_mock.assert_called_once_with(self.request, 'universe.html',
-                                            {'form': form_object_mock,
-                                             'universe': universe_obj_mock})
+        self.pop_form_cls.assert_called_once_with(data=self.request.POST)
+
+    def test_passes_form_to_template_if_sd_form_invalid(self):
+        self.request.POST['SupplyDemand'] = \
+            [self.first_sd_post_data, self.second_sd_post_data]
+        self.pop_form.is_valid.return_value = True
+        self.first_sd_form.is_valid.return_value = True
+        self.second_sd_form.is_valid.return_value = False
+
+        self.universe_view.post(self.request, 2)
+
+        self.pop_form_cls.assert_called_once_with(data=self.request.POST)
+
+    def test_renderes_universe_template_if_form_invalid(self):
+        self.pop_form.is_valid.return_value = False
+
+        self.universe_view.post(self.request, 2)
+
+        self.universe_cls.objects.get.assert_called_once_with(id=2)
+        self.render_mock.assert_called_once_with(self.request, 'universe.html',
+                                                 {'form': self.pop_form,
+                                                  'universe': self.universe})

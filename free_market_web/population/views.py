@@ -21,13 +21,17 @@ class ExistingUniverseView(View):
 
     def post(self, request, universe_id):
         form = NewPopulationForm(data=request.POST)
-        if form.is_valid():
-            if 'SupplyDemand' in request.POST:
-                sp_forms = []
-                for sp_data in request.POST['SupplyDemand']:
-                    sp_forms.append(SupplyDemandForm(data=request.POST))
+        sd_forms = []
+        sd_forms_valid = True
 
-            return redirect(form.save(for_universe=universe_id))
+        if 'SupplyDemand' in request.POST:
+            for sd_data in request.POST['SupplyDemand']:
+                sd_form = SupplyDemandForm(data=request.POST)
+                sd_forms_valid &= sd_form.is_valid()
+                sd_forms.append(sd_form)
+        if form.is_valid() and sd_forms_valid:
+            return redirect(form.save(for_universe=universe_id,
+                                      sd_forms=sd_forms))
         else:
             return self._render_universe(request, universe_id, form)
 
@@ -36,17 +40,25 @@ class ExistingUniverseView(View):
         return render(request, 'universe.html', {'form': form,
                                                  'universe': universe})
 
+
 class NewUniverseView(View):
 
     def get(self, request):
         form = NewPopulationForm()
         return render(request, 'new_universe.html', {'form': form})
 
-
     def post(self, request):
         form = NewPopulationForm(data=request.POST)
-        if form.is_valid():
-            return redirect(form.save())
+        sd_forms = []
+        sd_forms_valid = True
+
+        if 'SupplyDemand' in request.POST:
+            for sd_data in request.POST['SupplyDemand']:
+                sd_form = SupplyDemandForm(data=request.POST)
+                sd_forms_valid &= sd_form.is_valid()
+                sd_forms.append(sd_form)
+
+        if form.is_valid() and sd_forms_valid:
+            return redirect(form.save(sd_forms=sd_forms))
         else:
             return render(request, 'new_universe.html', {'form': form})
-
