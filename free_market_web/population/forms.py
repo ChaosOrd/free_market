@@ -1,5 +1,6 @@
 from django import forms
-from population.models import Population, Universe
+from django.forms import ModelChoiceField
+from population.models import Population, Resource, SupplyDemand, Universe
 
 EMPTY_NAME_ERROR = 'Population name can not be empty'
 EMPTY_QUANTITY_ERROR = 'Population quantity can not be empty'
@@ -31,17 +32,30 @@ class NewPopulationForm(forms.ModelForm):
             }),
         }
 
-    def save(self, for_universe=None):
+    def save(self, sd_forms, for_universe=None):
         if for_universe is None:
             universe = Universe.create_new()
         else:
             universe = Universe.objects.get(id=for_universe)
 
-        Population.create_new(universe=universe,
-                              name=self.cleaned_data['name'],
-                              quantity=self.cleaned_data['quantity'])
+        new_pop = Population.create_new(
+            universe=universe, name=self.cleaned_data['name'],
+            quantity=self.cleaned_data['quantity'])
+
+        for sd_form in sd_forms:
+            sd_form.save(for_population=new_pop.id)
+
         return universe
 
 
 class SupplyDemandForm(forms.ModelForm):
-    pass
+
+    resource = ModelChoiceField(queryset=Resource.objects.all())
+
+    class Meta:
+        model = SupplyDemand
+        fields = ('population', 'resource', 'value',)
+
+    def save(self, for_population):
+        SupplyDemand.create_new(resource=self.cleaned_data['resource'],
+                                value=self.cleaned_data['value'])

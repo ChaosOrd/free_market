@@ -1,44 +1,61 @@
 from django.test import TestCase
 from population.forms import (NewPopulationForm, EMPTY_NAME_ERROR,
                               EMPTY_QUANTITY_ERROR, INVALID_QUANTITY_ERROR)
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 class TestNewItemForm(TestCase):
 
-    @patch('population.forms.Universe')
-    @patch('population.forms.Population')
-    def test_save_creates_new_population_and_universe(self, population, universe):
+    def setUp(self):
+        self.universe_patcher = patch('population.forms.Universe')
+        self.universe = self.universe_patcher.start()
+        self.population_patcher = patch('population.forms.Population')
+        self.population = self.population_patcher.start()
+
+    def tearDown(self):
+        self.universe_patcher.stop()
+        self.population_patcher.stop()
+
+    def test_save_creates_new_population_and_universe(self):
         new_pop_form = NewPopulationForm(data={'name': 'Farmers',
                                                'quantity': '100'})
         new_pop_form.is_valid()
-        new_pop_form.save()
+        new_pop_form.save(sd_forms=[])
 
-        population.create_new.assert_called_once_with(
-            universe=universe.create_new.return_value,
+        self.population.create_new.assert_called_once_with(
+            universe=self.universe.create_new.return_value,
             name='Farmers', quantity=100)
 
-    @patch('population.forms.Universe')
-    @patch('population.forms.Population')
-    def test_save_returns_new_universe_if_no_universe_passed(
-        self, population, universe
-    ):
+    def test_save_returns_new_universe_if_no_universe_passed(self):
         new_pop_form = NewPopulationForm(data={'name': 'Farmers',
                                                'quantity': '100'})
         new_pop_form.is_valid()
-        self.assertEqual(new_pop_form.save(), universe.create_new.return_value)
+        self.assertEqual(new_pop_form.save(sd_forms=[]),
+                         self.universe.create_new.return_value)
 
-    @patch('population.forms.Universe')
-    @patch('population.forms.Population')
-    def test_save_returns_existing_universe_if_universe_pased(self, population_cls, universe_cls):
-        universe_obj = universe_cls.objects.get.return_value
+    def test_save_returns_existing_universe_if_universe_pased(self):
+        universe_obj = self.universe.objects.get.return_value
         new_pop_form = NewPopulationForm(data={'name': 'Farmers',
                                                'quantity': '100'})
         new_pop_form.is_valid()
-        returned_universe = new_pop_form.save(for_universe=1)
+        returned_universe = new_pop_form.save(sd_forms=[], for_universe=1)
 
-        universe_cls.objects.get.assert_called_once_with(id=1)
+        self.universe.objects.get.assert_called_once_with(id=1)
         self.assertEqual(returned_universe, universe_obj)
+
+    def test_save_saves_all_sd_forms(self):
+        first_sd_form = Mock()
+        second_sd_form = Mock()
+        new_pop_form = NewPopulationForm(
+            data={'name': 'Programmers', 'quantity': 5})
+        new_pop_obj = self.population.create_new.return_value
+
+        new_pop_form.is_valid()
+        new_pop_form.save(sd_forms=[first_sd_form, second_sd_form],
+                          for_universe=1)
+
+        first_sd_form.save.assert_called_once_with(
+            for_population=new_pop_obj.id)
 
     def test_form_validation_for_blank_name(self):
         new_pop_form = NewPopulationForm(data={'name': '',

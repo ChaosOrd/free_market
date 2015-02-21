@@ -23,3 +23,12 @@ class Population(models.Model):
         new_pop = Population.objects.create(universe=universe, name=name,
                                             quantity=quantity)
         return new_pop
+
+
+class Resource(models.Model):
+    name = models.TextField()
+
+class SupplyDemand(models.Model):
+    population = models.ForeignKey(Population)
+    resource = models.ForeignKey(Resource)
+    value = models.FloatField()
