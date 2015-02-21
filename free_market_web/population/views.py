@@ -13,13 +13,13 @@ def supply_demand_form(request):
     return render(request, 'supply_demand_form.html', {'form': form})
 
 
-class ExistingUniverseView(View):
+class BaseUniverseView(View):
 
-    def get(self, request, universe_id):
+    def get(self, request, universe_id=None):
         form = NewPopulationForm()
         return self._render_universe(request, universe_id, form)
 
-    def post(self, request, universe_id):
+    def post(self, request, universe_id=None):
         form = NewPopulationForm(data=request.POST)
         sd_forms = []
         sd_forms_valid = True
@@ -36,29 +36,27 @@ class ExistingUniverseView(View):
             return self._render_universe(request, universe_id, form)
 
     def _render_universe(self, request, universe_id, form):
-        universe = Universe.objects.get(id=universe_id)
-        return render(request, 'universe.html', {'form': form,
-                                                 'universe': universe})
+        render_data = {'form': form}
+
+        if universe_id is not None:
+            render_data['universe'] = Universe.objects.get(id=universe_id)
+
+        return render(request, self.template_name, render_data)
+
+    @property
+    def template_name(self):
+        return None
 
 
-class NewUniverseView(View):
+class ExistingUniverseView(BaseUniverseView):
 
-    def get(self, request):
-        form = NewPopulationForm()
-        return render(request, 'new_universe.html', {'form': form})
+    @property
+    def template_name(self):
+        return 'universe.html'
 
-    def post(self, request):
-        form = NewPopulationForm(data=request.POST)
-        sd_forms = []
-        sd_forms_valid = True
 
-        if 'SupplyDemand' in request.POST:
-            for sd_data in request.POST['SupplyDemand']:
-                sd_form = SupplyDemandForm(data=request.POST)
-                sd_forms_valid &= sd_form.is_valid()
-                sd_forms.append(sd_form)
+class NewUniverseView(BaseUniverseView):
 
-        if form.is_valid() and sd_forms_valid:
-            return redirect(form.save(sd_forms=sd_forms))
-        else:
-            return render(request, 'new_universe.html', {'form': form})
+    @property
+    def template_name(self):
+        return 'new_universe.html'

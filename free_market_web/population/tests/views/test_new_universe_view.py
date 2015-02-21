@@ -74,7 +74,8 @@ class TestNewUniverseView(TestCase):
 
         self.universe_view.post(self.request)
 
-        self.pop_form.save.assert_called_once_with(sd_forms=[])
+        self.pop_form.save.assert_called_once_with(for_universe=None,
+                                                   sd_forms=[])
 
     def test_saves_pop_form_if_sd_forms_valid(self):
         self.request.POST['SupplyDemand'] = \
@@ -85,7 +86,7 @@ class TestNewUniverseView(TestCase):
 
         self.universe_view.post(self.request)
 
-        self.pop_form.save.assert_called_once_with(
+        self.pop_form.save.assert_called_once_with(for_universe=None,
             sd_forms=[self.first_sd_form, self.second_sd_form])
 
     def test_redirects_to_form_save_return_value_if_form_valid(self):
