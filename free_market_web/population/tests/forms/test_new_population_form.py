@@ -4,7 +4,7 @@ from population.forms import (NewPopulationForm, EMPTY_NAME_ERROR,
 from unittest.mock import Mock, patch
 
 
-class TestNewItemForm(TestCase):
+class TestNewPopulationForm(TestCase):
 
     def setUp(self):
         self.universe_patcher = patch('population.forms.Universe')
@@ -55,7 +55,7 @@ class TestNewItemForm(TestCase):
                           for_universe=1)
 
         first_sd_form.save.assert_called_once_with(
-            for_population=new_pop_obj.id)
+            for_population=new_pop_obj)
 
     def test_form_validation_for_blank_name(self):
         new_pop_form = NewPopulationForm(data={'name': '',

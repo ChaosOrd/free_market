@@ -43,19 +43,34 @@ class NewPopulationForm(forms.ModelForm):
             quantity=self.cleaned_data['quantity'])
 
         for sd_form in sd_forms:
-            sd_form.save(for_population=new_pop.id)
+            sd_form.save(for_population=new_pop)
 
         return universe
 
 
+INVALID_SD_VALUE_ERROR = 'Supply/Demand value is invalid'
+EMPTY_SD_VALUE_ERROR = 'Supply/Demand value can not be empty'
+EMPTY_RESOURCE_ERROR = 'Resource can not be empty'
+
+
 class SupplyDemandForm(forms.ModelForm):
 
-    resource = ModelChoiceField(queryset=Resource.objects.all())
+    resource = ModelChoiceField(queryset=Resource.objects.all(),
+                                error_messages = {
+                                    'required': EMPTY_RESOURCE_ERROR,
+                                })
 
     class Meta:
         model = SupplyDemand
         fields = ('population', 'resource', 'value',)
+        error_messages = {
+            'value': {
+                'required': EMPTY_SD_VALUE_ERROR,
+                'invalid': INVALID_SD_VALUE_ERROR
+            },
+        }
 
     def save(self, for_population):
-        SupplyDemand.create_new(resource=self.cleaned_data['resource'],
-                                value=self.cleaned_data['value'])
+        SupplyDemand.objects.create(population=for_population,
+                                    resource=self.cleaned_data['resource'],
+                                    value=self.cleaned_data['value'])
