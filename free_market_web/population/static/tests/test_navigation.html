@@ -11,7 +11,9 @@
       <input type="textbox" id="id_first_tb" tabindex="0" />
       <input type="textbox" id="id_second_tb" tabindex="1" />
       <button type="submit" id="id_btn" tabindex="2">Submit</button>
-      <input type="textbox" id="some_other_input" tabindex="3" />
+      <select id="some_other_input" tabindex="3" />
+      <input id="some_other_text_input", tabindex="4" />
+      <input id="input_with_big_tabindex", tabindex="20" />
     </form>
   </div>
 </body>
@@ -48,12 +50,24 @@ test("key other than enter shoud not focus on next input", function() {
   equal(document.activeElement.id, 'id_first_tb');
 });
 
-test("IsTextbox should return true when given textbox element", function() {
-  equal(navigation.IsTextBox($('#id_first_tb')), true);
+test("enter should focus opn next input if current input is select", function() {
+  $('#some_other_input').focus();
+  press(13);
+  equal(document.activeElement.id, 'some_other_text_input');
 });
 
-test("IsTextbox should return false when given button element", function() {
-  equal(navigation.IsTextBox($('#id_btn')), false);
+test("enter should focus on next input if there is a gap in tabindices", function() {
+  $('#some_other_text_input').focus();
+  press(13);
+  equal(document.activeElement.id, 'input_with_big_tabindex');
+});
+
+test("IsSubmit should return true when given submit element", function() {
+  equal(navigation.IsSubmit($('#id_btn')[0]), true);
+});
+
+test("IsSubmit should return false when given textbox element", function() {
+  equal(navigation.IsSubmit($('#id_second_tb')[0]), false);
 });
 
 test("enter key should not focus if current input is not text box", function() {

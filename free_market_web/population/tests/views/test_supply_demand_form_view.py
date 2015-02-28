@@ -26,7 +26,7 @@ class TestSupplyDemandFormView(TestCase):
                                             'supply_demand_form.html',
                                             {'form': self.form_obj})
 
-    def test_creates_supply_demand_form_with_prefix(self):
+    def test_creates_supply_demand_form_with_tabindex_and_prefix(self):
         supply_demand_form(self.request, 1)
 
-        self.form_cls.assert_called_once_with(prefix='sd_1')
+        self.form_cls.assert_called_once_with(sd_num=1)

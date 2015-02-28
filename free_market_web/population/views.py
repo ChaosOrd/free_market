@@ -9,8 +9,7 @@ def home_page(request):
 
 
 def supply_demand_form(request, next_sd_num):
-    prefix = 'sd_{}'.format(next_sd_num)
-    form = SupplyDemandForm(prefix=prefix)
+    form = SupplyDemandForm(sd_num=int(next_sd_num))
     return render(request, 'supply_demand_form.html', {'form': form})
 
 
@@ -25,9 +24,10 @@ class BaseUniverseView(View):
         sd_forms = []
         sd_forms_valid = True
 
-        if 'SupplyDemand' in request.POST:
-            for sd_data in request.POST['SupplyDemand']:
-                sd_form = SupplyDemandForm(data=request.POST)
+        if 'sd_prefix' in request.POST:
+            for sd_prefix in request.POST['sd_prefix']:
+                sd_form = SupplyDemandForm(data=request.POST,
+                                           prefix=sd_prefix)
                 sd_forms_valid &= sd_form.is_valid()
                 sd_forms.append(sd_form)
         if form.is_valid() and sd_forms_valid:

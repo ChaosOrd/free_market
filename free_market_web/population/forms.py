@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import ModelChoiceField, HiddenInput
+from django.forms import ModelChoiceField
+from django.forms.fields import Select, TextInput
 from population.models import Population, Resource, SupplyDemand, Universe
 
 EMPTY_NAME_ERROR = 'Population name can not be empty'
@@ -24,10 +25,10 @@ class NewPopulationForm(forms.ModelForm):
         }
 
         widgets = {
-            'name': forms.fields.TextInput(attrs={
+            'name': TextInput(attrs={
                 'tabindex': '0', 'title': 'Name',
             }),
-            'quantity': forms.fields.TextInput(attrs={
+            'quantity': TextInput(attrs={
                 'tabindex': '1', 'title': 'Quantity',
             }),
         }
@@ -51,14 +52,28 @@ class NewPopulationForm(forms.ModelForm):
 INVALID_SD_VALUE_ERROR = 'Supply/Demand value is invalid'
 EMPTY_SD_VALUE_ERROR = 'Supply/Demand value can not be empty'
 EMPTY_RESOURCE_ERROR = 'Resource can not be empty'
+TABINDEX_START = 2
 
 
 class SupplyDemandForm(forms.ModelForm):
 
     resource = ModelChoiceField(queryset=Resource.objects.all(),
-                                error_messages={
-                                    'required': EMPTY_RESOURCE_ERROR,
-                                })
+                                error_messages={'required':
+                                                EMPTY_RESOURCE_ERROR,})
+
+    def __init__(self, sd_num=None, *args, **kwargs):
+        if sd_num is not None:
+            kwargs['prefix'] = 'sd_{}'.format(sd_num)
+
+        super().__init__(*args, **kwargs)
+
+        if sd_num is not None:
+            self.prefix = 'sd_{}'.format(sd_num)
+
+            num_of_fields = len(self.fields)
+            for idx, field_name in enumerate(self.fields):
+                self.fields[field_name].widget.attrs['tabindex'] = \
+                    str(TABINDEX_START + int(sd_num)*num_of_fields + idx)
 
     class Meta:
         model = SupplyDemand
