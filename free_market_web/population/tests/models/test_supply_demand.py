@@ -22,7 +22,45 @@ class TestSupplyDemandModel(TestCase):
             sd_model.full_clean()
 
     def test_related_to_population(self):
-        self.fail()
+        universe = Universe.create_new()
+        population = Population.objects.create(universe=universe, name='bla',
+                                               quantity=12)
+
+        sd = SupplyDemand(population=population, value=1.3)
+        self.assertEqual(sd.population, population)
 
     def test_related_to_resource(self):
-        self.fail()
+        universe = Universe.create_new()
+        population = Population.objects.create(universe=universe, name='bla',
+                                               quantity=10)
+        resource = Resource.objects.create(name='Weapons')
+
+        sd = SupplyDemand(population=population, value=0.5, resource=resource)
+
+        self.assertEqual(sd.resource, resource)
+
+    def test_can_not_save_sd_with_no_pop(self):
+        resource = Resource.objects.create(name='Wool')
+
+        with self.assertRaises(ValidationError):
+            sd = SupplyDemand(value=0.5, resource=resource)
+            sd.full_clean()
+
+    def test_can_not_save_sd_with_no_resource(self):
+        universe = Universe.create_new()
+        pop = Population.objects.create(name='Farmers', quantity=12,
+                                        universe=universe)
+
+        with self.assertRaises(ValidationError):
+            sd = SupplyDemand(population=pop, value=2.3)
+            sd.full_clean()
+
+    def stest_can_not_save_sd_with_no_value(self):
+        universe = Universe.create_new()
+        pop = Population.objects.create(name='Farmers', quantity=12,
+                                        universe=universe)
+        resource = Resource.objects.create(name='Weapons')
+
+        with self.assertRaises(ValidationError):
+            sd = SupplyDemand(population=pop, resource=resource)
+            sd.full_clean()

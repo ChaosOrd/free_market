@@ -1,0 +1,9 @@
+{% for field in form %}
+<li>
+  {{ field.label_tag }}{{ field }}
+  {% if field.errors %}
+    {{ fied.errors|striptags }}
+  {% endif %}
+</li>
+{% endfor %}
+<input type="hidden" id="sd_prefix" value="{{ form.prefix }}" />

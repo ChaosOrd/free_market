@@ -28,6 +28,10 @@ class Population(models.Model):
 class Resource(models.Model):
     name = models.TextField()
 
+    def __str__(self):
+        return self.name
+
+
 class SupplyDemand(models.Model):
     population = models.ForeignKey(Population)
     resource = models.ForeignKey(Resource)

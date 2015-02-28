@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelChoiceField
+from django.forms import ModelChoiceField, HiddenInput
 from population.models import Population, Resource, SupplyDemand, Universe
 
 EMPTY_NAME_ERROR = 'Population name can not be empty'
@@ -56,13 +56,13 @@ EMPTY_RESOURCE_ERROR = 'Resource can not be empty'
 class SupplyDemandForm(forms.ModelForm):
 
     resource = ModelChoiceField(queryset=Resource.objects.all(),
-                                error_messages = {
+                                error_messages={
                                     'required': EMPTY_RESOURCE_ERROR,
                                 })
 
     class Meta:
         model = SupplyDemand
-        fields = ('population', 'resource', 'value',)
+        fields = ('resource', 'value',)
         error_messages = {
             'value': {
                 'required': EMPTY_SD_VALUE_ERROR,

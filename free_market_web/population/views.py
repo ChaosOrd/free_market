@@ -8,8 +8,9 @@ def home_page(request):
     return render(request, 'home.html')
 
 
-def supply_demand_form(request):
-    form = SupplyDemandForm()
+def supply_demand_form(request, next_sd_num):
+    prefix = 'sd_{}'.format(next_sd_num)
+    form = SupplyDemandForm(prefix=prefix)
     return render(request, 'supply_demand_form.html', {'form': form})
 
 

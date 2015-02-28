@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
-from population.models import Resource
+from population.models import Population, Resource, Universe
 
 
 class TestResourceModel(TestCase):

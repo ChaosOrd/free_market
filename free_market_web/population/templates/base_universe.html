@@ -5,24 +5,25 @@
 <body>
   <form name="universe_form" action="{% block form_action %}{% endblock %}" method="post">
     {% csrf_token %}
+    <input type='hidden' name='next_sd_num' id='next_sd_num' value='0' />
     <ul>
-        {% for field in form %}
-            <li>
-              {{ field.label_tag }}{{ field }}
-              {% if field.errors %}
-                {{ field.errors|striptags }}
-              {% endif %}
-            </li>
-        {% endfor %}
-        <li>
-            <a href="#">Add consumption</a>
-        </li>
-        <li>
-            <a href="#">Add production</a>
-        </li>
-        <li>
-            <button id="id_save" type="submit" tabindex="2">Save</button>
-        </li>
+      {% for field in form %}
+          <li>
+            {{ field.label_tag }}{{ field }}
+            {% if field.errors %}
+              {{ field.errors|striptags }}
+            {% endif %}
+          </li>
+      {% endfor %}
+      <div id="supplies_demands">
+      </div>
+      <input type="hidden" name="next_sd_num" value="0" />
+      <li>
+          <a href="#" id="add_supply_demand">Add supply/demand</a>
+      </li>
+      <li>
+          <button id="id_save" type="submit" tabindex="2">save</button>
+      </li>
     </ul>
   </form>
   {% block content %}
@@ -30,4 +31,5 @@
 </body>
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="/static/navigation.js"></script>
+<script src="/static/custom_population.js"></script>
 </html>

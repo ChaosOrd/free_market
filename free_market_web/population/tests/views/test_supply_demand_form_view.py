@@ -9,14 +9,24 @@ class TestSupplyDemandFormView(TestCase):
     def setUp(self):
         self.request = HttpRequest()
         self.request.method = 'GET'
+        self.render_patcher = patch('population.views.render')
+        self.render = self.render_patcher.start()
+        self.form_patcher = patch('population.views.SupplyDemandForm')
+        self.form_cls = self.form_patcher.start()
+        self.form_obj = self.form_cls.return_value
 
-    @patch('population.views.SupplyDemandForm')
-    @patch('population.views.render')
-    def test_renders_supply_demand_form_template(self, render_mock, form_cls):
-        form_obj = form_cls.return_value
+    def tearDown(self):
+        self.render_patcher.stop()
+        self.form_patcher.stop()
 
-        supply_demand_form(self.request)
+    def test_renders_supply_demand_form_template(self):
+        supply_demand_form(self.request, 1)
 
-        render_mock.assert_called_once_with(self.request,
+        self.render.assert_called_once_with(self.request,
                                             'supply_demand_form.html',
-                                            {'form': form_obj})
+                                            {'form': self.form_obj})
+
+    def test_creates_supply_demand_form_with_prefix(self):
+        supply_demand_form(self.request, 1)
+
+        self.form_cls.assert_called_once_with(prefix='sd_1')

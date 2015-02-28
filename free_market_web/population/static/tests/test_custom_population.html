@@ -8,6 +8,7 @@
   <div id="qunit"></div>
   <div id="qunit_fixture">
     <form name="universe_form">
+      <input type='hidden' name='next_sd_num' id='next_sd_num' value='0' />
       <a id="add_supply_demand" href="#">Add supply/demand</a>
       <div id="supplies_demands">
       </div>
@@ -22,6 +23,7 @@
 module("custom population", {
   beforeEach: function() {
     sinon.spy(jQuery, 'ajax');
+    $('#next_sd_num').val('0');
   },
   afterEach: function() {
     jQuery.ajax.restore();
@@ -29,12 +31,12 @@ module("custom population", {
   }
 })
 
-test("clicking on add_supply_demand should make an ajax request", function() {
+test("clicking on add_supply_demand should make an ajax request with next sd number", function() {
+  $('#next_sd_num').val('5')
   $('#add_supply_demand').trigger("click");
-  
 
   equal(true, jQuery.ajax.calledWithMatch({
-    url: 'supply_demand_form',
+    url: '/population/supply_demand_form/5',
     type: 'get',
     success: CustomPopulation.addToSupplyDemand
     })
@@ -47,6 +49,16 @@ test('CustomPopulation.addToSupplyDemand adds contend to supply div', function()
   CustomPopulation.addToSupplyDemand('after add');
 
   equal($('#supplies_demands').html(), 'before add after add');
+});
+
+test('CustomPopulation.addToSupplyDemand increases next supply demand number by one', function() {
+  CustomPopulation.addToSupplyDemand('something');
+
+  equal($('#next_sd_num').val(), '1');
+
+  CustomPopulation.addToSupplyDemand('another one');
+
+  equal($('#next_sd_num').val(), '2');
 });
   </script>
 </body>
