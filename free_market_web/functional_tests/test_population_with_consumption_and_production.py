@@ -76,6 +76,15 @@ class CreateBasicPopulationTest(FunctionalTest):
         # She inserts the supply
         supply_val_tb.send_keys('0.3\n')
 
-        self.fail('Continue the test')
+        # She hits the save button
+        self.browser.find_element_by_id('id_save').click()
+
         # She sees that the population was created with consumption
         # and production details she inserted
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('People', page_text)
+        self.assertIn('20', page_text)
+        self.assertIn('Milk', page_text)
+        self.assertIn('-4.5', page_text)
+        self.assertIn('Bread', page_text)
+        self.assertIn('0.3', page_text)

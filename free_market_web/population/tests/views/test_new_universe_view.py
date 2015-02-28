@@ -31,6 +31,8 @@ class TestNewUniverseView(TestCase):
         self.second_sd_form = Mock()
         self.sd_form_cls.side_effect = [self.first_sd_form, self.second_sd_form]
         self.sd_prefixes = ['sd_0', 'sd_1']
+        setattr(self.request.POST.getlist, Mock())
+        self.request.POST.getlist.return_value = self.sd_prefixes
         self.universe = self.universe_cls.objects.get.return_value
 
     def tearDown(self):

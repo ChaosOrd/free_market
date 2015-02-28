@@ -5,8 +5,17 @@
   {% for pop in universe.population_set.all %}
   <ul>
     <li>
-      Name: {{ pop.name }}
-      Quantity: {{ pop.quantity }}
+      {{ pop.name }} Quantity: {{ pop.quantity }}
+    </li>
+    <li>
+      <div>Supply and demand</div>
+      <div>
+        <ul>
+          {% for sd in pop.supplydemand_set.all %}
+            <li>{{ sd.resource.name }}: {{ sd.value }}</li>
+          {% endfor %}
+        </ul>
+      </div>
     </li>
   </ul>
   {% endfor %}

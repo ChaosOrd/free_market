@@ -2,7 +2,7 @@ from django.test import TestCase
 from population.forms import (SupplyDemandForm, INVALID_SD_VALUE_ERROR,
                               EMPTY_SD_VALUE_ERROR, EMPTY_RESOURCE_ERROR)
 from unittest.mock import Mock, patch
-from population.models import Resource
+from population.models import Resource, Population, Universe
 
 
 class TestSupplyDemandForm(TestCase):
@@ -25,6 +25,31 @@ class TestSupplyDemandForm(TestCase):
 
         create.assert_called_once_with(population=population, resource=resource,
                                        value=3.5)
+
+    def test_validation_all_fields_valid_with_no_prefix(self):
+        resource = Resource.objects.create(id=1, name='Bread')
+        universe = Universe.objects.create()
+        population= Population.objects.create(id=1, universe=universe,
+                                              name='Farmers', quantity=10)
+
+
+        sd_form = SupplyDemandForm(data={'population': 1, 'resource': 1,
+                                         'value': 3.5})
+
+        self.assertTrue(sd_form.is_valid())
+
+    def test_validation_all_fields_valid_with_prefix(self):
+        resource = Resource.objects.create(id=1, name='Bread')
+        universe = Universe.objects.create()
+        population= Population.objects.create(id=1, universe=universe,
+                                              name='Farmers', quantity=10)
+
+        sd_form = SupplyDemandForm(data={'sd_0-population': 1,
+                                         'sd_0-resource': 1,
+                                         'sd_0-value': 3.5},
+                                   prefix='sd_0')
+
+        self.assertTrue(sd_form.is_valid())
 
     def test_validation_for_non_numeric_value(self):
         sd_form = SupplyDemandForm(data={'resource': 1, 'value': 'three'})

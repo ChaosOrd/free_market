@@ -68,8 +68,6 @@ class SupplyDemandForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if sd_num is not None:
-            self.prefix = 'sd_{}'.format(sd_num)
-
             num_of_fields = len(self.fields)
             for idx, field_name in enumerate(self.fields):
                 self.fields[field_name].widget.attrs['tabindex'] = \
@@ -89,3 +87,4 @@ class SupplyDemandForm(forms.ModelForm):
         SupplyDemand.objects.create(population=for_population,
                                     resource=self.cleaned_data['resource'],
                                     value=self.cleaned_data['value'])
+

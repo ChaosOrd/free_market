@@ -25,7 +25,7 @@ class BaseUniverseView(View):
         sd_forms_valid = True
 
         if 'sd_prefix' in request.POST:
-            for sd_prefix in request.POST['sd_prefix']:
+            for sd_prefix in request.POST.getlist('sd_prefix'):
                 sd_form = SupplyDemandForm(data=request.POST,
                                            prefix=sd_prefix)
                 sd_forms_valid &= sd_form.is_valid()
