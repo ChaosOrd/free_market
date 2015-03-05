@@ -1,5 +1,6 @@
 from django.http.request import HttpRequest
 from django.test import TestCase
+from django.http import QueryDict
 from population.views import ExistingUniverseView
 from unittest.mock import Mock, patch
 
@@ -30,8 +31,8 @@ class TestBaseUniverseView(TestCase):
         self.second_sd_form = Mock()
         self.sd_form_cls.side_effect = [self.first_sd_form, self.second_sd_form]
         self.sd_prefixes = ['sd_0', 'sd_1']
-        setattr(self.request.POST.getlist, Mock())
-        self.request.POST.getlist.return_value = self.sd_prefixes
+        self.post_with_prefixes = QueryDict('sd_prefix={}&sd_prefix={}'.format(
+            self.sd_prefixes[0], self.sd_prefixes[1]))
         self.universe = self.universe_cls.objects.get.return_value
 
     def tearDown(self):
@@ -58,7 +59,7 @@ class TestBaseUniverseView(TestCase):
         self.pop_form_cls.assert_called_once_with(data=self.request.POST)
 
     def test_post_passes_POST_data_and_prefix_to_sd_forms(self):
-        self.request.POST['sd_prefix'] = self.sd_prefixes
+        self.request.POST = self.post_with_prefixes
         self.pop_form.is_valid.return_value = True
         self.first_sd_form.is_valid.return_value = True
         self.second_sd_form.is_valid.return_value = True
@@ -77,7 +78,7 @@ class TestBaseUniverseView(TestCase):
                                                    sd_forms=[])
 
     def test_saves_pop_form_if_sd_forms_valid(self):
-        self.request.POST['sd_prefix'] = self.sd_prefixes
+        self.request.POST = self.post_with_prefixes
         self.pop_form.is_valid.return_value = True
         self.first_sd_form.is_valid.return_value = True
         self.second_sd_form.is_valid.return_value = True
@@ -113,7 +114,7 @@ class TestBaseUniverseView(TestCase):
         self.assertFalse(self.pop_form.save.called)
 
     def test_does_not_save_if_sd_form_invalid(self):
-        self.request.POST['sd_prefix'] = self.sd_prefixes
+        self.request.POST = self.post_with_prefixes
         self.pop_form.is_valid.return_value = True
         self.first_sd_form.is_valid.return_value = True
         self.second_sd_form.is_valid.return_value = False
@@ -132,7 +133,7 @@ class TestBaseUniverseView(TestCase):
         self.pop_form_cls.assert_called_once_with(data=self.request.POST)
 
     def test_passes_form_to_template_if_sd_form_invalid(self):
-        self.request.POST['sd_prefixe'] = self.sd_prefixes
+        self.request.POST = self.post_with_prefixes
         self.pop_form.is_valid.return_value = True
         self.first_sd_form.is_valid.return_value = True
         self.second_sd_form.is_valid.return_value = False

@@ -61,7 +61,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'freemarketdb',
-        'USER': 'chaosord',
+        'USER': 'ChaosOrd',
         'PASSWORD': 'ChaosOrd',
         'HOST': '127.0.0.1'
     }
