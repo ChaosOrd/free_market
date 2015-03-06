@@ -49,7 +49,7 @@ class CreateBasicPopulationTest(FunctionalTest):
         self.assertEqual(self.browser.switch_to.active_element, demand_val_tb)
 
         # She inserts the demand value
-        demand_val_tb.send_keys('-4,5\n')
+        demand_val_tb.send_keys('-4.5\n')
 
         # The second consumption controls are not seen yet
         self.assertRaises(NoSuchElementException,
