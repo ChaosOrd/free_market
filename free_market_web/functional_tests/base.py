@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 
@@ -19,8 +20,15 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.browser.quit()
 
     def assert_element_does_not_exist(self, element_id):
-        element = self.browser.find_element_by_name(element_id)
-        self.assertIs(None, element)
+        self.assertRaises(NoSuchElementException,
+                          self.browser.find_element_by_id,
+                          element_id)
+
+    def assert_element_exists(self, element_id):
+        try:
+            self.browser.find_element_by_id(element_id)
+        except NoSuchElementException:
+            self.fail('Element {} not found'.format(element_id))
 
     def select_listbox_item(self, listbox, item_name):
         listbox_select = Select(listbox)

@@ -26,14 +26,9 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         qty_tb = self.browser.find_element_by_id('id_quantity')
         qty_tb.send_keys('20\n')
 
-        # The consumption input controls are not seen yet
-        self.assertRaises(NoSuchElementException,
-                          self.browser.find_element_by_id,
-                          'id_sd_0-resource')
-
-        self.assertRaises(NoSuchElementException,
-                          self.browser.find_element_by_id,
-                          'id_sd_0-value')
+        # The supply demand input controls are not seen yet
+        self.assert_element_does_not_exist(self.get_sd_value_id(0))
+        self.assert_element_does_not_exist(self.get_sd_resource_id(0))
 
         # She clicks on add demand item
         self.browser.find_element_by_link_text('Add supply/demand').click()
@@ -51,25 +46,34 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         # She inserts the demand value
         demand_val_tb.send_keys('-4.5\n')
 
-        # The second consumption controls are not seen yet
-        self.assertRaises(NoSuchElementException,
-                          self.browser.find_element_by_id,
-                          'id_sd_1-resource')
-
-        self.assertRaises(NoSuchElementException,
-                          self.browser.find_element_by_id,
-                          'id_sd_1-value')
+        # The second supply demand controls are not seen yet
+        self.assert_element_does_not_exist(self.get_sd_resource_id(1))
+        self.assert_element_does_not_exist(self.get_sd_value_id(1))
 
         # She clicks on add consumption once again
         self.browser.find_element_by_link_text('Add supply/demand').click()
 
+        # She sees that there are new form fields are added
+        self.assert_element_exists(self.get_sd_resource_id(1))
+        self.assert_element_exists(self.get_sd_value_id(1))
+
+        # She notices that there is a remove option and decides to give
+        # it a try
+        self.browser.find_element_by_id('id_sd_1-remove').click()
+
+        # The input controls dissapeared
+        self.assert_element_does_not_exist(self.get_sd_resource_id(1))
+        self.assert_element_does_not_exist(self.get_sd_value_id(1))
+
+        # She clicks on the "Add supply/demand" once again
+
         # She enteres the name of other and hits enter
-        resource_cb = self.get_sd_resource_widget(1)
+        resource_cb = self.get_sd_resource_widget(2)
         self.select_listbox_item(resource_cb, 'Bread')
         resource_cb.send_keys('\n')
 
         # The supply/demand value input box became focused
-        supply_val_tb = self.get_sd_value_widget(1)
+        supply_val_tb = self.get_sd_value_widget(2)
         self.assertEqual(self.browser.switch_to.active_element, supply_val_tb)
 
         # She inserts the supply
@@ -89,9 +93,15 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         self.assertIn('0.3', page_text)
 
     def get_sd_resource_widget(self, sd_index):
-        resource_element_id = 'id_sd_{}-resource'.format(sd_index)
+        resource_element_id = self.get_sd_resource_id(sd_index)
         return self.browser.find_element_by_id(resource_element_id)
 
     def get_sd_value_widget(self, sd_index):
-        value_element_id = 'id_sd_{}-value'.format(sd_index)
+        value_element_id = self.get_sd_value_id(sd_index)
         return self.browser.find_element_by_id(value_element_id)
+
+    def get_sd_resource_id(self, sd_index):
+        return'id_sd_{}-resource'.format(sd_index)
+
+    def get_sd_value_id(self, sd_index):
+        return 'id_sd_{}-value'.format(sd_index)
