@@ -1,8 +1,5 @@
 from .base import FunctionalTest
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException
 from population.models import Resource
-
 
 
 class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
@@ -66,6 +63,7 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         self.assert_element_does_not_exist(self.get_sd_value_id(1))
 
         # She clicks on the "Add supply/demand" once again
+        self.browser.find_element_by_link_text('Add supply/demand').click()
 
         # She enteres the name of other and hits enter
         resource_cb = self.get_sd_resource_widget(2)

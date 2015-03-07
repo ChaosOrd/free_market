@@ -1,9 +1,13 @@
-{% for field in form %}
-<li>
-  {{ field.label_tag }}{{ field }}
-  {% if field.errors %}
-    {{ fied.errors|striptags }}
-  {% endif %}
-</li>
-{% endfor %}
-<input type="hidden" name="sd_prefix" value="{{ form.prefix }}" />
+<div id="{{ form.prefix }}">
+  {% for field in form %}
+  <li>
+    {{ field.label_tag }}{{ field }}
+    {% if field.errors %}
+      {{ fied.errors|striptags }}
+    {% endif %}
+  </li>
+  {% endfor %}
+  <a href="#" id="id_{{ form.prefix }}-remove" remove_target="{{ form.prefix }}">Remove</a>
+  <input type="hidden" name="sd_prefix" value="{{ form.prefix }}" />
+</div>
+

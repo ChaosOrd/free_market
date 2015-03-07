@@ -13,6 +13,15 @@
       <div id="supplies_demands">
       </div>
     </form>
+    <div id="item_to_remove">
+      <a id="item_remover" remove_target="item_to_remove"></a>
+    </div>
+    <div id="first_item_to_remove">
+      <a id="first_item_remover" remove_target="first_item"></a>
+    </div>
+    <div id="second_item_to_remove">
+      <a id="second_item_remover" remove_target="second_item"></a>
+    </div>
   </div>
   <script src="http://code.jquery.com/jquery.min.js"></script>
   <script src="../../../free_market_web/static/tests/qunit.js"></script>
@@ -20,10 +29,18 @@
   <script src="../custom_population.js"></script>
   <script>
 
+
+var navigation = {
+    Init: function(data)
+    {
+      // Do nothinhg, since it is a mock
+    }
+};
+
 module("custom population", {
   beforeEach: function() {
     sinon.spy(jQuery, 'ajax');
-    $('#next_sd_num').val('0');
+    $('#next_sd_num').val('0'); 
   },
   afterEach: function() {
     jQuery.ajax.restore();
@@ -60,6 +77,27 @@ test('CustomPopulation.addToSupplyDemand increases next supply demand number by 
 
   equal($('#next_sd_num').val(), '2');
 });
+
+test('Item with remove target should remove underlying element', function() {
+  $('#item_remover').trigger("click");
+
+  equal(0, $("#item_to_remove").length);
+});
+
+test('Multiple items with remove targets remove the right elements', function() {
+  equal(1, $('#first_item_to_remove').length);
+  equal(1, $('#second_item_to_remove').length);
+
+  $('#second_item_remover').trigger('click');
+
+  equal(1, $('#first_item_to_remove').length);
+  equal(0, $('#second_item_to_remove').length);
+
+  $('#first_item_remover').trigger('click');
+
+  equal(0, $('#first_item_to_remove').length);
+  equal(0, $('#second_item_to_remove').length);
+})
   </script>
 </body>
 </html>
