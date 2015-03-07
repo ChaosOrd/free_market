@@ -40,13 +40,12 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
 
         # She chooses the conusmed resource and hits enter
 
-        resource_cb = self.browser.find_element_by_id('id_sd_0-resource')
-        resource_select = Select(resource_cb)
-        resource_select.select_by_visible_text('Milk')
+        resource_cb = self.get_sd_resource_widget(sd_index=0)
+        self.select_listbox_item(resource_cb, 'Milk')
         resource_cb.send_keys('\n')
 
         # The supply/demand value input box became focused
-        demand_val_tb = self.browser.find_element_by_id('id_sd_0-value')
+        demand_val_tb = self.get_sd_value_widget(0)
         self.assertEqual(self.browser.switch_to.active_element, demand_val_tb)
 
         # She inserts the demand value
@@ -65,13 +64,12 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         self.browser.find_element_by_link_text('Add supply/demand').click()
 
         # She enteres the name of other and hits enter
-        resource_cb = self.browser.find_element_by_id('id_sd_1-resource')
-        resource_select = Select(resource_cb)
-        resource_select.select_by_visible_text('Bread')
+        resource_cb = self.get_sd_resource_widget(1)
+        self.select_listbox_item(resource_cb, 'Bread')
         resource_cb.send_keys('\n')
 
         # The supply/demand value input box became focused
-        supply_val_tb = self.browser.find_element_by_id('id_sd_1-value')
+        supply_val_tb = self.get_sd_value_widget(1)
         self.assertEqual(self.browser.switch_to.active_element, supply_val_tb)
 
         # She inserts the supply
@@ -89,3 +87,11 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         self.assertIn('-4.5', page_text)
         self.assertIn('Bread', page_text)
         self.assertIn('0.3', page_text)
+
+    def get_sd_resource_widget(self, sd_index):
+        resource_element_id = 'id_sd_{}-resource'.format(sd_index)
+        return self.browser.find_element_by_id(resource_element_id)
+
+    def get_sd_value_widget(self, sd_index):
+        value_element_id = 'id_sd_{}-value'.format(sd_index)
+        return self.browser.find_element_by_id(value_element_id)
