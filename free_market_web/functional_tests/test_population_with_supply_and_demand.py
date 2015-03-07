@@ -4,6 +4,7 @@ from selenium.common.exceptions import NoSuchElementException
 from population.models import Resource
 
 
+
 class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
 
     @classmethod
