@@ -4,11 +4,11 @@ from population.models import Resource
 
 class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUp(self):
+        super().setUp()
         Resource.objects.create(name='Milk')
         Resource.objects.create(name='Bread')
+        Resource.objects.create(name='Beer')
 
     def test_can_create_a_population_with_demand_and_get_see_it_later(self):
         # Yulia have decided to create a universe with populations
@@ -104,11 +104,67 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         # He decides to add it a supply but forgets to choose a resource
         self.browser.find_element_by_link_text('Add supply/demand').click()
         supply_val_tb = self.get_sd_value_widget(0)
-        supply_val_tb.send_keys('0,4')
+        supply_val_tb.send_keys('0.4')
         self.browser.find_element_by_id('id_save').click()
 
+        # He sees an informative error message
         text = self.browser.find_element_by_tag_name('body').text
-        self.assertIn('Supply/demand value can not be empty', text)
+        self.assertIn('Supply/Demand resource can not be empty', text)
+
+        # Uncle Bob selects the missing resource and clicks save
+        resource_cb = self.get_sd_resource_widget(0)
+        self.select_listbox_item(resource_cb, 'Bread')
+        self.browser.find_element_by_id('id_save').click()
+
+        # The population was successfully added
+        text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Clean coders', text)
+        self.assertIn('3', text)
+        self.assertIn('Bread', text)
+        self.assertIn('0.4', text)
+
+        # He decides to add another population
+
+        # He types the population details
+        self.browser.find_element_by_id('id_name').send_keys('Code monkeys\n')
+        input_qty_tb = self.browser.find_element_by_id('id_quantity')
+        input_qty_tb.send_keys('6\n')
+
+        # He decides to add it a supply but forgets to insert a value
+        self.browser.find_element_by_link_text('Add supply/demand').click()
+        resource_cb = self.get_sd_resource_widget(0)
+        self.select_listbox_item(resource_cb, 'Beer')
+        self.browser.find_element_by_id('id_save').click()
+
+        # He sees another error message
+        text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Supply/Demand value can not be empty', text)
+
+        # He enters some junk and hits save
+        supply_val_tb = self.get_sd_value_widget(0)
+        supply_val_tb.send_keys('zero seven')
+        self.browser.find_element_by_id('id_save').click()
+
+        # The error message has changed
+        text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Supply/Demand value is invalid', text)
+
+        # He rewrites value and hits save
+        supply_val_tb = self.get_sd_value_widget(0)
+        supply_val_tb.clear()
+        supply_val_tb.send_keys('0.7')
+        self.browser.find_element_by_id('id_save').click()
+
+        # He sees the new population along with the old population data
+        text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Clean coders', text)
+        self.assertIn('3', text)
+        self.assertIn('Bread', text)
+        self.assertIn('0.4', text)
+        self.assertIn('Code monkeys', text)
+        self.assertIn('6', text)
+        self.assertIn('Bread', text)
+        self.assertIn('0.7', text)
 
     def get_sd_resource_widget(self, sd_index):
         resource_element_id = self.get_sd_resource_id(sd_index)

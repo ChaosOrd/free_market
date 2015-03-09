@@ -44,8 +44,9 @@ class NewPopulationForm(forms.ModelForm):
                 self.sd_forms.append(sd_form)
 
     def is_valid(self):
+        main_form_valid = super().is_valid()
         sd_forms_valid = all(sd_form.is_valid() for sd_form in self.sd_forms)
-        return sd_forms_valid and super().is_valid()
+        return main_form_valid and sd_forms_valid
 
     def save(self, for_universe=None):
         if for_universe is None:
@@ -71,10 +72,6 @@ TABINDEX_START = 2
 
 class SupplyDemandForm(forms.ModelForm):
 
-    resource = ModelChoiceField(queryset=Resource.objects.all(),
-                                error_messages={'required':
-                                                EMPTY_RESOURCE_ERROR, })
-
     def __init__(self, sd_num=None, *args, **kwargs):
         if sd_num is not None:
             kwargs['prefix'] = 'sd_{}'.format(sd_num)
@@ -93,9 +90,13 @@ class SupplyDemandForm(forms.ModelForm):
         error_messages = {
             'value': {
                 'required': EMPTY_SD_VALUE_ERROR,
-                'invalid': INVALID_SD_VALUE_ERROR
+                'invalid': INVALID_SD_VALUE_ERROR,
+            },
+            'resource': {
+                'required': EMPTY_RESOURCE_ERROR,
             },
         }
+        widgets = {'value': TextInput()}
 
     def save(self, for_population):
         SupplyDemand.objects.create(population=for_population,

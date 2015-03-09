@@ -1,9 +1,10 @@
 <div id="{{ form.prefix }}">
   {% for field in form %}
   <li>
-    {{ field.label_tag }}{{ field }}
+    {{ field.label_tag }} {{ field }}
     {% if field.errors %}
-      {{ fied.errors|striptags }}
+      {{ field.errors|striptags }}
+      {% else %}
     {% endif %}
   </li>
   {% endfor %}
