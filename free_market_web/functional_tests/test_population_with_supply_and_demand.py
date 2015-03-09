@@ -90,6 +90,26 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         self.assertIn('Bread', page_text)
         self.assertIn('0.3', page_text)
 
+    def test_form_validation_with_supply_and_demand(self):
+
+        # Uncle Bob wants to create a new universe
+        self.browser.get(self.server_url)
+        self.browser.find_element_by_link_text('New universe').click()
+
+        # He types the population details
+        self.browser.find_element_by_id('id_name').send_keys('Clean coders\n')
+        input_qty_tb = self.browser.find_element_by_id('id_quantity')
+        input_qty_tb.send_keys('3\n')
+
+        # He decides to add it a supply but forgets to choose a resource
+        self.browser.find_element_by_link_text('Add supply/demand').click()
+        supply_val_tb = self.get_sd_value_widget(0)
+        supply_val_tb.send_keys('0,4')
+        self.browser.find_element_by_id('id_save').click()
+
+        text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Supply/demand value can not be empty', text)
+
     def get_sd_resource_widget(self, sd_index):
         resource_element_id = self.get_sd_resource_id(sd_index)
         return self.browser.find_element_by_id(resource_element_id)

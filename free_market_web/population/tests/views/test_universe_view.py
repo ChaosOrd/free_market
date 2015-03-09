@@ -58,35 +58,13 @@ class TestBaseUniverseView(TestCase):
 
         self.pop_form_cls.assert_called_once_with(data=self.request.POST)
 
-    def test_post_passes_POST_data_and_prefix_to_sd_forms(self):
-        self.request.POST = self.post_with_prefixes
-        self.pop_form.is_valid.return_value = True
-        self.first_sd_form.is_valid.return_value = True
-        self.second_sd_form.is_valid.return_value = True
-
-        self.universe_view.post(self.request, 1)
-
-        self.sd_form_cls.assert_any_call(data=self.request.POST, prefix='sd_0')
-        self.sd_form_cls.assert_any_call(data=self.request.POST, prefix='sd_1')
 
     def test_saves_form_if_valid(self):
         self.pop_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
-        self.pop_form.save.assert_called_once_with(for_universe=1,
-                                                   sd_forms=[])
-
-    def test_saves_pop_form_if_sd_forms_valid(self):
-        self.request.POST = self.post_with_prefixes
-        self.pop_form.is_valid.return_value = True
-        self.first_sd_form.is_valid.return_value = True
-        self.second_sd_form.is_valid.return_value = True
-
-        self.universe_view.post(self.request, 1)
-
-        self.pop_form.save.assert_called_once_with(
-            for_universe=1, sd_forms=[self.first_sd_form, self.second_sd_form])
+        self.pop_form.save.assert_called_once_with(for_universe=1)
 
     def test_redirects_to_form_return_value_if_form_valid(self):
         self.pop_form.is_valid.return_value = True
@@ -112,18 +90,6 @@ class TestBaseUniverseView(TestCase):
         self.universe_view.post(self.request, 1)
 
         self.assertFalse(self.pop_form.save.called)
-
-    def test_does_not_save_if_sd_form_invalid(self):
-        self.request.POST = self.post_with_prefixes
-        self.pop_form.is_valid.return_value = True
-        self.first_sd_form.is_valid.return_value = True
-        self.second_sd_form.is_valid.return_value = False
-
-        self.universe_view.post(self.request, 1)
-
-        self.assertFalse(self.pop_form.save.called)
-        self.assertFalse(self.first_sd_form.save.called)
-        self.assertFalse(self.second_sd_form.save.called)
 
     def test_passes_form_to_template_if_form_invalid(self):
         self.pop_form.is_valid.return_value = False

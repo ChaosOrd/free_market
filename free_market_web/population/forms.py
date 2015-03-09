@@ -33,7 +33,21 @@ class NewPopulationForm(forms.ModelForm):
             }),
         }
 
-    def save(self, sd_forms, for_universe=None):
+    def __init__(self, data=None, *args, **kwargs):
+        super().__init__(*args, data=data, **kwargs)
+
+        self.sd_forms = []
+
+        if data is not None:
+            for sd_prefix in data.getlist('sd_prefix'):
+                sd_form = SupplyDemandForm(prefix=sd_prefix, data=data)
+                self.sd_forms.append(sd_form)
+
+    def is_valid(self):
+        sd_forms_valid = all(sd_form.is_valid() for sd_form in self.sd_forms)
+        return sd_forms_valid and super().is_valid()
+
+    def save(self, for_universe=None):
         if for_universe is None:
             universe = Universe.create_new()
         else:
@@ -43,7 +57,7 @@ class NewPopulationForm(forms.ModelForm):
             universe=universe, name=self.cleaned_data['name'],
             quantity=self.cleaned_data['quantity'])
 
-        for sd_form in sd_forms:
+        for sd_form in self.sd_forms:
             sd_form.save(for_population=new_pop)
 
         return universe
@@ -51,7 +65,7 @@ class NewPopulationForm(forms.ModelForm):
 
 INVALID_SD_VALUE_ERROR = 'Supply/Demand value is invalid'
 EMPTY_SD_VALUE_ERROR = 'Supply/Demand value can not be empty'
-EMPTY_RESOURCE_ERROR = 'Resource can not be empty'
+EMPTY_RESOURCE_ERROR = 'Supply/Demand resource can not be empty'
 TABINDEX_START = 2
 
 
@@ -59,7 +73,7 @@ class SupplyDemandForm(forms.ModelForm):
 
     resource = ModelChoiceField(queryset=Resource.objects.all(),
                                 error_messages={'required':
-                                                EMPTY_RESOURCE_ERROR,})
+                                                EMPTY_RESOURCE_ERROR, })
 
     def __init__(self, sd_num=None, *args, **kwargs):
         if sd_num is not None:
@@ -87,4 +101,3 @@ class SupplyDemandForm(forms.ModelForm):
         SupplyDemand.objects.create(population=for_population,
                                     resource=self.cleaned_data['resource'],
                                     value=self.cleaned_data['value'])
-

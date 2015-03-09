@@ -16,6 +16,9 @@
           </li>
       {% endfor %}
       <div id="supplies_demands">
+        {% for sd_form in form.sd_forms %}
+          {% include "supply_demand_form.html" with form=sd_form %} 
+        {% endfor %}
       </div>
       <input type="hidden" name="next_sd_num" value="0" />
       <li>
