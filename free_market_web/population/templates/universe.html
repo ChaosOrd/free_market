@@ -5,7 +5,7 @@
   {% for pop in universe.population_set.all %}
   <ul>
     <li>
-      {{ pop.name }} Quantity: {{ pop.quantity }}
+      {{ pop.name }} X {{ pop.quantity }}
     </li>
     <li>
       <div>Supply and demand</div>
@@ -16,6 +16,9 @@
           {% endfor %}
         </ul>
       </div>
+    </li>
+    <li>
+      <a href='#'>Delete</a>
     </li>
   </ul>
   {% endfor %}
