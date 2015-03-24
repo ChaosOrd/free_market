@@ -64,6 +64,9 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         # He decides to delete the first population
         delete_links[0].click()
 
+        self.browser.refresh()
+        body = self.browser.find_element_by_tag_name('body').text
+
         # The first item does not exist
         self.assertNotIn('Farmers', body)
         self.assertNotIn('Milk', body)

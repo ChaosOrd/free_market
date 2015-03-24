@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from .forms import NewPopulationForm, SupplyDemandForm
-from population.models import Universe
+from population.models import Population, Universe
 
 
 def home_page(request):
@@ -11,6 +11,13 @@ def home_page(request):
 def supply_demand_form(request, next_sd_num):
     form = SupplyDemandForm(sd_num=int(next_sd_num))
     return render(request, 'supply_demand_form.html', {'form': form})
+
+
+def delete_population(request, population_id):
+    population = Population.objects.get(id=population_id)
+    universe = population.universe
+    population.delete()
+    return redirect(universe)
 
 
 class BaseUniverseView(View):
