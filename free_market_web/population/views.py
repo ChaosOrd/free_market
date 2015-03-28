@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .forms import NewPopulationForm, SupplyDemandForm
+from .forms import NewPopulationForm, SupplyDemandForm, UniverseForm
 from population.models import Population, Universe
 
 
@@ -27,12 +27,14 @@ class BaseUniverseView(View):
         return self._render_universe(request, universe_id, form)
 
     def post(self, request, universe_id=None):
-        form = NewPopulationForm(data=request.POST)
+        universe_form = UniverseForm(data=request.POST)
+        pop_form = NewPopulationForm(data=request.POST)
 
-        if form.is_valid():
-            return redirect(form.save(for_universe=universe_id))
+        if universe_form.is_valid() and pop_form.is_valid():
+            universe_form.save()
+            return redirect(pop_form.save(for_universe=universe_id))
         else:
-            return self._render_universe(request, universe_id, form)
+            return self._render_universe(request, universe_id, pop_form)
 
     def _render_universe(self, request, universe_id, form):
         render_data = {'form': form}

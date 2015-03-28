@@ -9,20 +9,35 @@ class TestBaseUniverseView(BaseUniverseTestCase):
         super().create_class_mocks()
         self.universe_view = BaseUniverseView()
 
-    def test_post_passes_POST_data_to_form(self):
+    def test_post_passes_POST_data_to_pop_form(self):
         self.universe_view.post(self.request, 1)
 
         self.pop_form_cls.assert_called_once_with(data=self.request.POST)
 
-    def test_saves_form_if_valid(self):
+    def test_post_passes_POST_data_to_universe_form(self):
+        self.universe_view.post(self.request)
+
+        self.universe_form_cls.assert_called_once_with(data=self.request.POST)
+
+    def test_saves_population_if_forms_valid(self):
         self.pop_form.is_valid.return_value = True
+        self.universe_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
         self.pop_form.save.assert_called_once_with(for_universe=1)
 
-    def test_redirects_to_form_return_value_if_form_valid(self):
+    def test_saves_universe_if_forms_valid(self):
         self.pop_form.is_valid.return_value = True
+        self.universe_form.is_valid.return_value = True
+
+        self.universe_view.post(self.request, 1)
+
+        self.universe_form.save.assert_called_once_with()
+
+    def test_redirects_to_form_return_value_if_forms_valid(self):
+        self.pop_form.is_valid.return_value = True
+        self.universe_form.is_valid.return_value = True
 
         self.universe_view.post(self.request, 1)
 
@@ -31,6 +46,7 @@ class TestBaseUniverseView(BaseUniverseTestCase):
 
     def test_redirects_to_pop_form_if_all_sd_forms_valid(self):
         self.pop_form.is_valid.return_value = True
+        self.universe_form.is_valid.return_value = True
         self.first_sd_form.is_valid.return_value = True
         self.second_sd_form.is_valid.return_value = True
 
@@ -39,10 +55,17 @@ class TestBaseUniverseView(BaseUniverseTestCase):
         self.redirect_mock.assert_called_once_with(
             self.pop_form.save.return_value)
 
-    def test_does_not_save_if_form_is_invalid(self):
+    def test_does_not_save_if_pop_form_is_invalid(self):
         self.pop_form.is_valid.return_value = False
 
         self.universe_view.post(self.request, 1)
+
+        self.assertFalse(self.pop_form.save.called)
+
+    def test_does_not_save_if_universe_form_is_invalid(self):
+        self.universe_form.is_valid.return_value = False
+
+        self.universe_view.post(self.request)
 
         self.assertFalse(self.pop_form.save.called)
 

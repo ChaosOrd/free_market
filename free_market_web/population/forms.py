@@ -102,3 +102,7 @@ class SupplyDemandForm(forms.ModelForm):
         SupplyDemand.objects.create(population=for_population,
                                     resource=self.cleaned_data['resource'],
                                     value=self.cleaned_data['value'])
+
+
+class UniverseForm(forms.ModelForm):
+    pass

@@ -2,7 +2,7 @@ from django.http.request import HttpRequest
 from django.test import TestCase
 from django.http import QueryDict
 from unittest.mock import Mock, patch
-from population.views import NewUniverseView
+
 
 class BaseUniverseTestCase(TestCase):
 
@@ -14,6 +14,8 @@ class BaseUniverseTestCase(TestCase):
     def create_class_mocks(self):
         self.pop_form_patcher = patch('population.views.NewPopulationForm')
         self.pop_form_cls = self.pop_form_patcher.start()
+        self.universe_form_patcher = patch('population.views.UniverseForm')
+        self.universe_form_cls = self.universe_form_patcher.start()
         self.universe_patcher = patch('population.views.Universe')
         self.universe_cls = self.universe_patcher.start()
         self.sd_form_patcher = patch('population.views.SupplyDemandForm')
@@ -25,6 +27,7 @@ class BaseUniverseTestCase(TestCase):
 
     def create_instance_mocks(self):
         self.pop_form = self.pop_form_cls.return_value
+        self.universe_form = self.universe_form_cls.return_value
         self.first_sd_form = Mock()
         self.second_sd_form = Mock()
         self.sd_form_cls.side_effect = [self.first_sd_form, self.second_sd_form]
@@ -38,6 +41,7 @@ class BaseUniverseTestCase(TestCase):
 
     def tear_down_class_mocks(self):
         self.pop_form_patcher.stop()
+        self.universe_form_patcher.stop()
         self.universe_patcher.stop()
         self.sd_form_patcher.stop()
         self.render_patcher.stop()

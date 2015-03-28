@@ -12,6 +12,10 @@ class CreateBasicPopulationTest(FunctionalTest):
         # She sees the custom new universe link and decides to give it a try
         self.browser.find_element_by_link_text('New universe').click()
 
+        # She fills the universe name in the input box
+        universe_name_tb = self.browser.find_element_by_id('id_universe_name')
+        universe_name_tb.send_keys('Simple unierse')
+
         # She sees an input box with a default population name
         input_name_tb = self.browser.find_element_by_id('id_name')
 
@@ -39,7 +43,15 @@ class CreateBasicPopulationTest(FunctionalTest):
         self.assertIn('Farmers', page_text)
         self.assertIn('20', page_text)
 
-        # The input form is still present so she decides to add another pop
+        # The input box with the universe name still presents but it is alredy
+        # filled with the name she previously gave
+        universe_name_tb = self.browser.find_element_by_id('id_universe_name')
+        self.assertEqual(universe_name_tb.text, 'Simple universe')
+
+        # She changes the universe name
+        universe_name_tb.send_keys('Complicated universe')
+
+        # She decides to add another pop
         input_name_tb = self.browser.find_element_by_id('id_name')
         # The name textbox is focused
         self.assertEqual(self.browser.switch_to.active_element, input_name_tb)
@@ -62,6 +74,10 @@ class CreateBasicPopulationTest(FunctionalTest):
         self.assertIn('20', page_text)
         self.assertIn('Miners', page_text)
         self.assertIn('50', page_text)
+
+        # The universe name text box now contains the updated name
+        universe_name_tb = self.browser.find_element_by_id('id_universe_name')
+        self.assertEqual(universe_name_tb.text, 'Complicated universe')
 
         # She closes the browser
         self.browser.close()
