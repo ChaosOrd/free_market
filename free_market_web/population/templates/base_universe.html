@@ -7,7 +7,15 @@
     {% csrf_token %}
     <input type='hidden' name='next_sd_num' id='next_sd_num' value='0' />
     <ul>
-      {% for field in form %}
+      {% for field in universe_form %}
+      <li>
+          {{ field.label_tag }} {{ field }}
+          {% if field.errors %}
+            {{ field.errors|striptags }}
+          {% endif %}
+      </li>
+      {% endfor %}
+      {% for field in pop_form %}
           <li>
             {{ field.label_tag }} {{ field }}
             {% if field.errors %}
@@ -16,7 +24,7 @@
           </li>
       {% endfor %}
       <div id="supplies_demands">
-        {% for sd_form in form.sd_forms %}
+        {% for sd_form in pop_form.sd_forms %}
           {% include "supply_demand_form.html" with form=sd_form %} 
         {% endfor %}
       </div>

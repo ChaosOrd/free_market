@@ -8,10 +8,9 @@ from unittest.mock import Mock, patch
 class TestNewPopulationForm(TestCase):
 
     def setUp(self):
-        self.universe_patcher = patch('population.forms.Universe')
-        self.universe = self.universe_patcher.start()
         self.population_patcher = patch('population.forms.Population')
         self.population = self.population_patcher.start()
+        self.universe = Mock()
         self.sd_form_patcher = patch('population.forms.SupplyDemandForm')
         self.sd_form_cls = self.sd_form_patcher.start()
         self.first_sd_form_obj = Mock()
@@ -23,7 +22,6 @@ class TestNewPopulationForm(TestCase):
         self.post_data = QueryDict('').copy()
 
     def tearDown(self):
-        self.universe_patcher.stop()
         self.population_patcher.stop()
         self.sd_form_patcher.stop()
 
@@ -49,32 +47,15 @@ class TestNewPopulationForm(TestCase):
         self.assertEqual(new_pop_form.sd_forms,
                          [self.first_sd_form_obj, self.second_sd_form_obj])
 
-    def test_save_creates_new_population_and_universe(self):
+    def test_save_creates_new_population(self):
         self.post_data.update(name='Farmers', quantity='100')
         new_pop_form = NewPopulationForm(data=self.post_data)
         new_pop_form.is_valid()
-        new_pop_form.save()
+        new_pop_form.save(for_universe=self.universe)
 
         self.population.create_new.assert_called_once_with(
-            universe=self.universe.create_new.return_value,
+            universe=self.universe,
             name='Farmers', quantity=100)
-
-    def test_save_returns_new_universe_if_no_universe_passed(self):
-        self.post_data.update(name='Farmers', quantity='100')
-        new_pop_form = NewPopulationForm(data=self.post_data)
-        new_pop_form.is_valid()
-        self.assertEqual(new_pop_form.save(),
-                         self.universe.create_new.return_value)
-
-    def test_save_returns_existing_universe_if_universe_pased(self):
-        universe_obj = self.universe.objects.get.return_value
-        self.post_data.update(name='Farmers', quantity='100')
-        new_pop_form = NewPopulationForm(data=self.post_data)
-        new_pop_form.is_valid()
-        returned_universe = new_pop_form.save(for_universe=1)
-
-        self.universe.objects.get.assert_called_once_with(id=1)
-        self.assertEqual(returned_universe, universe_obj)
 
     def test_save_saves_all_sd_forms(self):
         self.post_data.update(name='Programmers', quantity='5', sd_prefix='sd_0')

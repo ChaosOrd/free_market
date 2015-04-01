@@ -23,26 +23,48 @@ def delete_population(request, population_id):
 class BaseUniverseView(View):
 
     def get(self, request, universe_id=None):
-        form = NewPopulationForm()
-        return self._render_universe(request, universe_id, form)
+        return self._render_universe(request, universe_id)
 
     def post(self, request, universe_id=None):
         universe_form = UniverseForm(data=request.POST)
         pop_form = NewPopulationForm(data=request.POST)
 
         if universe_form.is_valid() and pop_form.is_valid():
-            universe_form.save()
-            return redirect(pop_form.save(for_universe=universe_id))
+            universe = self._save_universe(universe_form, universe_id)
+            pop_form.save(for_universe=universe)
+            return redirect(universe)
         else:
-            return self._render_universe(request, universe_id, pop_form)
+            return self._render_universe(request, universe_id)
 
-    def _render_universe(self, request, universe_id, form):
-        render_data = {'form': form}
-
+    def _save_universe(self, universe_form, universe_id):
         if universe_id is not None:
-            render_data['universe'] = Universe.objects.get(id=universe_id)
+            universe = Universe.objects.get(id=universe_id)
+            return universe_form.save(instance=universe)
+        else:
+            return universe_form.save()
+
+    def _render_universe(self, request, universe_id):
+        if universe_id is not None:
+            render_data = self._get_existing_universe_render_data(universe_id)
+        else:
+            render_data = self._get_new_universe_render_data()
 
         return render(request, self.template_name, render_data)
+
+    def _get_new_universe_render_data(self):
+        pop_form = NewPopulationForm()
+        universe_form = UniverseForm()
+
+        return {'pop_form': pop_form, 'universe_form': universe_form}
+
+    def _get_existing_universe_render_data(self, universe_id):
+        universe =  Universe.objects.get(id=universe_id)
+
+        pop_form = NewPopulationForm()
+        universe_form = UniverseForm(instance=universe)
+
+        return {'pop_form': pop_form, 'universe_form': universe_form,
+                'universe': universe}
 
     @property
     def template_name(self):

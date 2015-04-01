@@ -1,7 +1,6 @@
 from django import forms
-from django.forms import ModelChoiceField
-from django.forms.fields import Select, TextInput
-from population.models import Population, Resource, SupplyDemand, Universe
+from django.forms.fields import TextInput
+from population.models import Population, SupplyDemand, Universe
 
 EMPTY_NAME_ERROR = 'Population name can not be empty'
 EMPTY_QUANTITY_ERROR = 'Population quantity can not be empty'
@@ -15,7 +14,7 @@ class NewPopulationForm(forms.ModelForm):
         fields = ('name', 'quantity',)
 
         labels = {
-            'name': 'Name', 'quantity': 'Quantity'
+            'name': 'Population name', 'quantity': 'Quantity'
         }
 
         error_messages = {
@@ -26,10 +25,10 @@ class NewPopulationForm(forms.ModelForm):
 
         widgets = {
             'name': TextInput(attrs={
-                'tabindex': '0', 'title': 'Name',
+                'tabindex': '1', 'title': 'Name',
             }),
             'quantity': TextInput(attrs={
-                'tabindex': '1', 'title': 'Quantity',
+                'tabindex': '2', 'title': 'Quantity',
             }),
         }
 
@@ -48,20 +47,13 @@ class NewPopulationForm(forms.ModelForm):
         sd_forms_valid = all(sd_form.is_valid() for sd_form in self.sd_forms)
         return main_form_valid and sd_forms_valid
 
-    def save(self, for_universe=None):
-        if for_universe is None:
-            universe = Universe.create_new()
-        else:
-            universe = Universe.objects.get(id=for_universe)
-
+    def save(self, for_universe):
         new_pop = Population.create_new(
-            universe=universe, name=self.cleaned_data['name'],
+            universe=for_universe, name=self.cleaned_data['name'],
             quantity=self.cleaned_data['quantity'])
 
         for sd_form in self.sd_forms:
             sd_form.save(for_population=new_pop)
-
-        return universe
 
 
 INVALID_SD_VALUE_ERROR = 'Supply/Demand value is invalid'
@@ -104,5 +96,22 @@ class SupplyDemandForm(forms.ModelForm):
                                     value=self.cleaned_data['value'])
 
 
+EMPTY_UNIVERSE_NAME_ERROR = 'Universe name can not be empty'
+
+
 class UniverseForm(forms.ModelForm):
-    pass
+
+    class Meta:
+        model = Universe
+        fields = ('universe_name',)
+        widgets = {
+            'universe_name': TextInput(attrs={
+                'tabindex': '0', 'title': 'Name',
+            })
+        },
+        labels = {'universe_name': 'Universe name'}
+        error_messages = {
+            'universe_name': {
+                'required': EMPTY_UNIVERSE_NAME_ERROR
+            }
+        }

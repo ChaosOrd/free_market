@@ -4,6 +4,8 @@ from django.core.urlresolvers import reverse
 
 class Universe(models.Model):
 
+    universe_name = models.TextField()
+
     @staticmethod
     def create_new():
         return Universe.objects.create()
