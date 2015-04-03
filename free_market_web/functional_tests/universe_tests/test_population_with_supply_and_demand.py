@@ -1,8 +1,8 @@
-from .base import FunctionalTest
+from .base_universe import UniverseTest
 from population.models import Resource
 
 
-class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
+class CreatePopulationWithSupplyAndDemandTest(UniverseTest):
 
     def setUp(self):
         super().setUp()
@@ -16,6 +16,8 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
 
         self.browser.get(self.server_url)
         self.browser.find_element_by_link_text('New universe').click()
+
+        self.set_universe_name('Simple universe')
 
         # First she creates a population of people with "Food" demand
         name_tb = self.browser.find_element_by_id('id_name')

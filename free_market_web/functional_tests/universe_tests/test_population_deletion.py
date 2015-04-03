@@ -1,4 +1,4 @@
-from .base import FunctionalTest
+from ..base import FunctionalTest
 from population.models import Resource, Population, Universe, SupplyDemand
 
 

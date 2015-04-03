@@ -1,7 +1,7 @@
-from .base import FunctionalTest
+from .base_universe import UniverseTest
 
 
-class PopCreationValidationErrorsTest(FunctionalTest):
+class PopCreationValidationErrorsTest(UniverseTest):
 
     def test_forms_validation(self):
 
@@ -9,18 +9,22 @@ class PopCreationValidationErrorsTest(FunctionalTest):
         # a name
         self.browser.get(self.server_url)
         self.browser.find_element_by_link_text('New universe').click()
-        input_qty_tb = self.browser.find_element_by_id('id_quantity')
-        input_qty_tb.send_keys('50\n')
-        save_btn = self.browser.find_element_by_id('id_save')
-        save_btn.send_keys('\n')
+
+        # She hits save without typing anything
+        self.click_on_save()
+        text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn('Universe name can not be empty', text)
+
+        self.set_universe_name('Simple universe')
+        self.set_population_quantity('50')
+        self.click_on_save()
 
         # An error appeares indicating her failure
         text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Population name can not be empty', text)
 
         # The number she entered earlier still presents
-        qty_tb = self.browser.find_element_by_id('id_quantity')
-        self.assertEqual(qty_tb.get_attribute('value'), '50')
+        self.assert_pop_quantity_equals('50')
 
         # She gives it some name
         self.browser.find_element_by_id('id_name').send_keys('Loosers\n')
@@ -33,22 +37,20 @@ class PopCreationValidationErrorsTest(FunctionalTest):
         self.assertIn('50', text)
 
         # She decides to create one more, and now forgets to enter a quantity
-        name_tb = self.browser.find_element_by_id('id_name')
-        name_tb.send_keys('Rich people\n')
+        self.set_population_name('Rich people')
 
-        self.browser.find_element_by_id('id_save').click()
+        self.click_on_save()
 
         # She sees another error
         text = self.browser.find_element_by_tag_name('body').text
         self.assertIn('Population quantity can not be empty', text)
 
         # The name she entered earlier still presents
-        name_tb = self.browser.find_element_by_id('id_name')
-        self.assertEqual(name_tb.get_attribute('value'), 'Rich people')
+        self.assert_pop_name_equals('Rich people')
 
         # She puts some nonsence instead of the number
-        name_tb = self.browser.find_element_by_id('id_quantity')
-        name_tb.send_keys('blablabla\n')
+        self.set_population_quantity('blablabla')
+
         self.browser.find_element_by_id('id_save').click()
 
         # The error text has changed
@@ -56,11 +58,9 @@ class PopCreationValidationErrorsTest(FunctionalTest):
         self.assertIn('Population quantity is invalid', text)
 
         # Finally she gets it right and enters a number
-        qty_tb = self.browser.find_element_by_id('id_quantity')
-        qty_tb.clear()
-        qty_tb.send_keys('3\n')
+        self.set_population_quantity('3')
 
-        self.browser.find_element_by_id('id_save').click()
+        self.click_on_save()
 
         # She sees her another population
         text = self.browser.find_element_by_tag_name('body').text
