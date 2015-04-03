@@ -108,7 +108,7 @@ class UniverseForm(forms.ModelForm):
             'universe_name': TextInput(attrs={
                 'tabindex': '0', 'title': 'Name',
             })
-        },
+        }
         labels = {'universe_name': 'Universe name'}
         error_messages = {
             'universe_name': {

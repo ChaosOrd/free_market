@@ -22,49 +22,18 @@ def delete_population(request, population_id):
 
 class BaseUniverseView(View):
 
-    def get(self, request, universe_id=None):
-        return self._render_universe(request, universe_id)
-
-    def post(self, request, universe_id=None):
-        universe_form = UniverseForm(data=request.POST)
-        pop_form = NewPopulationForm(data=request.POST)
-
-        if universe_form.is_valid() and pop_form.is_valid():
-            universe = self._save_universe(universe_form, universe_id)
-            pop_form.save(for_universe=universe)
+    def save_forms_data(self, request):
+        if self.universe_form.is_valid() and self.pop_form.is_valid():
+            universe = self.universe_form.save()
+            self.pop_form.save(for_universe=universe)
             return redirect(universe)
         else:
-            return self._render_universe(request, universe_id)
+            return self._render_forms(request)
 
-    def _save_universe(self, universe_form, universe_id):
-        if universe_id is not None:
-            universe = Universe.objects.get(id=universe_id)
-            return universe_form.save(instance=universe)
-        else:
-            return universe_form.save()
-
-    def _render_universe(self, request, universe_id):
-        if universe_id is not None:
-            render_data = self._get_existing_universe_render_data(universe_id)
-        else:
-            render_data = self._get_new_universe_render_data()
-
-        return render(request, self.template_name, render_data)
-
-    def _get_new_universe_render_data(self):
-        pop_form = NewPopulationForm()
-        universe_form = UniverseForm()
-
-        return {'pop_form': pop_form, 'universe_form': universe_form}
-
-    def _get_existing_universe_render_data(self, universe_id):
-        universe =  Universe.objects.get(id=universe_id)
-
-        pop_form = NewPopulationForm()
-        universe_form = UniverseForm(instance=universe)
-
-        return {'pop_form': pop_form, 'universe_form': universe_form,
-                'universe': universe}
+    def _render_forms(self, request):
+        return render(request, self.template_name,
+                      {'pop_form': self.pop_form,
+                       'universe_form': self.universe_form})
 
     @property
     def template_name(self):
@@ -77,9 +46,31 @@ class ExistingUniverseView(BaseUniverseView):
     def template_name(self):
         return 'universe.html'
 
+    def get(self, request, universe_id):
+        universe = Universe.objects.get(id=universe_id)
+        self.pop_form = NewPopulationForm()
+        self.universe_form = UniverseForm(instance=universe)
+        return self._render_forms(request)
+
+    def post(self, request, universe_id):
+        universe = Universe.objects.get(id=universe_id)
+        self.pop_form = NewPopulationForm(data=request.POST)
+        self.universe_form = UniverseForm(data=request.POST, instance=universe)
+        return self.save_forms_data(request)
+
 
 class NewUniverseView(BaseUniverseView):
 
     @property
     def template_name(self):
         return 'new_universe.html'
+
+    def get(self, request):
+        self.pop_form = NewPopulationForm()
+        self.universe_form = UniverseForm()
+        return self._render_forms(request)
+
+    def post(self, request):
+        self.pop_form = NewPopulationForm(data=request.POST)
+        self.universe_form = UniverseForm(data=request.POST)
+        return self.save_forms_data(request)

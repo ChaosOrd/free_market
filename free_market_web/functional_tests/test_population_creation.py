@@ -4,6 +4,18 @@ from selenium import webdriver
 
 class CreateBasicPopulationTest(FunctionalTest):
 
+    def _set_universe_name(self, universe_name):
+        universe_name_tb = self.browser.find_element_by_id('id_universe_name')
+        universe_name_tb.send_keys(universe_name)
+
+    def _set_population_name(self, population_name):
+        input_name_tb = self.browser.find_element_by_id('id_name')
+        input_name_tb.send_keys(population_name)
+
+    def _set_population_quantity(self, qty):
+        input_qty_tb = self.browser.find_element_by_id('id_quantity')
+        input_qty_tb.send_keys(qty)
+
     def test_can_create_a_population_and_get_see_it_later(self):
         # Yulia found out about a web site that simulates a free marked
         # and decided to try it out
@@ -12,28 +24,13 @@ class CreateBasicPopulationTest(FunctionalTest):
         # She sees the custom new universe link and decides to give it a try
         self.browser.find_element_by_link_text('New universe').click()
 
-        # She fills the universe name in the input box
-        universe_name_tb = self.browser.find_element_by_id('id_universe_name')
-        universe_name_tb.send_keys('Simple unierse')
-
-        # She sees an input box with a default population name
-        input_name_tb = self.browser.find_element_by_id('id_name')
-
-        # The name text box is focused
-        self.assertEqual(self.browser.switch_to.active_element, input_name_tb)
+        self._set_universe_name('Simple universe')
 
         # She types a population name
-        input_name_tb.send_keys('Farmers\n')
+        self._set_population_name('Farmers')
 
-        # The next input box Yulia sees is the population quantity
-        input_qty_tb = self.browser.find_element_by_id('id_quantity')
-
-        # Since Yulia pressed enter in a previous element, now the quantity
-        # text box is focused
-        self.assertEqual(self.browser.switch_to.active_element, input_qty_tb)
-
-        # She types a small number and since she pressed enter in a previous
-        input_qty_tb.send_keys('20')
+        # Then she inserts a quantity
+        self._set_population_quantity('20')
 
         # Finally she presses the save link
         self.browser.find_element_by_id('id_save').click()
@@ -46,15 +43,20 @@ class CreateBasicPopulationTest(FunctionalTest):
         # The input box with the universe name still presents but it is alredy
         # filled with the name she previously gave
         universe_name_tb = self.browser.find_element_by_id('id_universe_name')
-        self.assertEqual(universe_name_tb.text, 'Simple universe')
+        self.assertEqual(universe_name_tb.get_attribute('value'),
+                         'Simple universe')
+
+        # The name textbox is focused
+        self.assertEqual(self.browser.switch_to.active_element,
+                         universe_name_tb)
 
         # She changes the universe name
+        universe_name_tb.clear()
         universe_name_tb.send_keys('Complicated universe')
 
         # She decides to add another pop
         input_name_tb = self.browser.find_element_by_id('id_name')
-        # The name textbox is focused
-        self.assertEqual(self.browser.switch_to.active_element, input_name_tb)
+
         input_name_tb.send_keys('Miners\n')
         input_qty_tb = self.browser.find_element_by_id('id_quantity')
 
@@ -77,7 +79,8 @@ class CreateBasicPopulationTest(FunctionalTest):
 
         # The universe name text box now contains the updated name
         universe_name_tb = self.browser.find_element_by_id('id_universe_name')
-        self.assertEqual(universe_name_tb.text, 'Complicated universe')
+        self.assertEqual(universe_name_tb.get_attribute('value'),
+                         'Complicated universe')
 
         # She closes the browser
         self.browser.close()

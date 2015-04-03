@@ -1,8 +1,8 @@
 {% extends "base_universe.html" %}
 {% block title %}Universe{% endblock %}
-{% block form_action %}{% url 'universe' universe.id %}{% endblock %}
+{% block form_action %}{% url 'universe' universe_form.instance.id %}{% endblock %}
 {% block content %}
-  {% for pop in universe.population_set.all %}
+  {% for pop in universe_form.instance.population_set.all %}
   <ul>
     <li>
       {{ pop.name }} X {{ pop.quantity }}
