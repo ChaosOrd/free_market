@@ -18,7 +18,7 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         self.vodka = Resource.objects.create(name='Vodka')
 
     def _create_universe_fixtures(self):
-        self.universe = Universe.objects.create(id=0, name='My universe')
+        self.universe = Universe.objects.create(id=0, universe_name='My universe')
 
     def _create_population_fixtures(self):
         self.first_pop = Population.objects.create(universe=self.universe,
