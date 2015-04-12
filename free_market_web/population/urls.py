@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, include, url
-from django.contrib import admin
 from population.views import (ExistingUniverseView, NewUniverseView,
                               supply_demand_form, delete_population)
 

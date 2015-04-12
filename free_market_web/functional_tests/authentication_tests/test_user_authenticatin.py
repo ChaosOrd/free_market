@@ -27,7 +27,6 @@ class SignUpTest(FunctionalTest):
         # She enters her email
         self.browser.find_element_by_id('id_email').send_keys('yulia@gmail.com')
 
-
         # She enters the username she wants to use
         self.browser.find_eleent_by_id('id_username').send_keys('Yulia')
 

@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'population',
+    'common_templates',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -66,6 +67,14 @@ DATABASES = {
         'HOST': '127.0.0.1'
     }
 }
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'common_templates')],
+        'APP_DIRS': True,
+    },
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

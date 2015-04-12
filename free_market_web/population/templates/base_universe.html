@@ -1,9 +1,4 @@
-<html>
-<head>
-  <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
-  <form name="universe_form" action="{% block form_action %}{% endblock %}" method="post">
+{% extends "base.html" %}
     {% csrf_token %}
     <input type='hidden' name='next_sd_num' id='next_sd_num' value='0' />
     <ul>
@@ -39,8 +34,7 @@
   </form>
   {% block content %}
   {% endblock %}
-</body>
+
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="/static/navigation.js"></script>
 <script src="/static/custom_population.js"></script>
-</html>
