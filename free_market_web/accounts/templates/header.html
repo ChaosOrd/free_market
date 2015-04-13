@@ -3,6 +3,6 @@
   {{ account.name }} <a href="#">Log out</a> 
   {% else %}
   <a href="{% url 'sign_up' %}">Sign up</a>
-  <a href="#">Log in</a>
+  <a href="{% url 'log_in' %}">Log in</a>
   {% endif %}
 </div>

@@ -18,7 +18,7 @@ class SignUpTest(FunctionalTest):
     def submit(self):
         self.browser.find_element_by_id('id_submit').click()
 
-    def test_basic_account_creation(self):
+    def test_basic_account_creation_and_loggin_in(self):
 
         # Yulia have decided that she wants to create an account
         # She clicks on Sign up link
@@ -55,3 +55,17 @@ class SignUpTest(FunctionalTest):
         # She notices that the website now recognises her
         body_text = self.get_body_text()
         self.assertIn('You have signed up successfully. You can now proceed logging in.', body_text)
+
+        # Yulia decides to check if the login was created
+        # She clicks on log in link
+        self.browser.find_element_by_link_text('Log in').click()
+
+        # She enters her credentials and submits the form
+        self.browser.find_element_by_id('id_username').send_keys('Yulia')
+        self.browser.find_element_by_id('id_password').send_keys('Bfc#hgoro')
+        self.submit()
+
+        # She sees that she has successfully logged in
+        body_text = self.get_body_text()
+        self.assertIn('Yulia', body_text)
+        self.assertIn('Sign out', body_text)

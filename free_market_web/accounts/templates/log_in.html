@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<form name='create_user_form' action='{% url 'log_in' %}' method='post'>
+  {% csrf_token %}
+  <ul>
+  {% for field in form %}
+    <li>
+      {{ field.label_tag }} {{ field }}
+      {% if field.errors %}
+        {{ field.errors|striptags }}
+      {% endif %}
+    </li>
+  {% endfor %}
+  <li>
+    <button id="id_submit" type="submit">Log in</button>
+  </li>
+  </ul>
+</form>
+{% endblock %}
