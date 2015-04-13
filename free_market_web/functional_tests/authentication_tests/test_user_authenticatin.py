@@ -7,7 +7,7 @@ class SignUpTest(FunctionalTest):
         return self.browser.find_element_by_id('id_password1')
 
     def get_password2_tb(self):
-        return self.browser.find_element_by_id('id_passwordl2')
+        return self.browser.find_element_by_id('id_password2')
 
     def fill_password1_tb(self, value):
         self.get_password1_tb().send_keys(value)
@@ -23,13 +23,13 @@ class SignUpTest(FunctionalTest):
         # Yulia have decided that she wants to create an account
         # She clicks on Sign up link
         self.browser.get(self.server_url)
-        self.browser.find_element_by_link_text('Sign up')
+        self.browser.find_element_by_link_text('Sign up').click()
 
-        # She enters her email
-        self.browser.find_element_by_id('id_email').send_keys('yulia@gmail.com')
+        ## She enters her email
+        # self.browser.find_element_by_id('id_email').send_keys('yulia@gmail.com')
 
         # She enters the username she wants to use
-        self.browser.find_eleent_by_id('id_username').send_keys('Yulia')
+        self.browser.find_element_by_id('id_username').send_keys('Yulia')
 
         # She enters the password she wants to use twice, but makes a typo
         self.fill_password1_tb('Bfc#hgoro')
@@ -47,11 +47,11 @@ class SignUpTest(FunctionalTest):
 
         # She fills the passwords once again, this time right and clicks
         # the submit link
+        self.browser.find_element_by_id('id_username').send_keys('Yulia')
         self.fill_password1_tb('Bfc#hgoro')
         self.fill_password2_tb('Bfc#hgoro')
         self.submit()
 
         # She notices that the website now recognises her
         body_text = self.get_body_text()
-        self.assertIn('Log out', body_text)
-        self.assertIn('Yulia', body_text)
+        self.assertIn('You have signed up successfully. You can now proceed logging in.', body_text)

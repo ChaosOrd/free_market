@@ -2,7 +2,7 @@
   {% if account %}
   {{ account.name }} <a href="#">Log out</a> 
   {% else %}
-  <a href="#">Sign up</a>
+  <a href="{% url 'sign_up' %}">Sign up</a>
   <a href="#">Log in</a>
   {% endif %}
 </div>
