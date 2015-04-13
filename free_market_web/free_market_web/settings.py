@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'population',
+    'accounts',
     'common_templates',
 )
 
@@ -68,11 +69,14 @@ DATABASES = {
     }
 }
 
+DIRS = [os.path.join(BASE_DIR, app_dir, 'templates') for app_dir in INSTALLED_APPS]
+DIRS.append(os.path.join(BASE_DIR, 'common_templates'))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'common_templates')],
-        'APP_DIRS': True,
+        'DIRS': DIRS,
+        'APP_DIRS': False,
     },
 ]
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block content %}
     {% csrf_token %}
     <input type='hidden' name='next_sd_num' id='next_sd_num' value='0' />
     <ul>
@@ -32,9 +33,9 @@
       </li>
     </ul>
   </form>
-  {% block content %}
+  {% block universe_content %}
   {% endblock %}
-
+{% endblock %}
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="/static/navigation.js"></script>
 <script src="/static/custom_population.js"></script>

@@ -1,7 +1,7 @@
 {% extends "base_universe.html" %}
 {% block title %}Universe{% endblock %}
 {% block form_action %}{% url 'universe' universe_form.instance.id %}{% endblock %}
-{% block content %}
+{% block universe_content %}
   {% for pop in universe_form.instance.population_set.all %}
   <ul>
     <li>
