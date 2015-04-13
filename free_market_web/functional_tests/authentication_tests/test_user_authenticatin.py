@@ -22,6 +22,7 @@ class SignUpTest(FunctionalTest):
 
         # Yulia have decided that she wants to create an account
         # She clicks on Sign up link
+        self.browser.get(self.server_url)
         self.browser.find_element_by_link_text('Sign up')
 
         # She enters her email

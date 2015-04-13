@@ -36,9 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'free_market_web',
     'population',
     'accounts',
-    'common_templates',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -70,7 +70,6 @@ DATABASES = {
 }
 
 DIRS = [os.path.join(BASE_DIR, app_dir, 'templates') for app_dir in INSTALLED_APPS]
-DIRS.append(os.path.join(BASE_DIR, 'common_templates'))
 
 TEMPLATES = [
     {

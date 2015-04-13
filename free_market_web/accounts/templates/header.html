@@ -1,7 +1,8 @@
 <div>
-  {{ account.name }} 
   {% if account %}
-  <a href="#">Sign up</a>
+  {{ account.name }} <a href="#">Log out</a> 
   {% else %}
+  <a href="#">Sign up</a>
+  <a href="#">Log in</a>
   {% endif %}
 </div>
