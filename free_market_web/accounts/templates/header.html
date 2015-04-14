@@ -1,6 +1,6 @@
 <div>
-  {% if account %}
-  {{ account.name }} <a href="#">Log out</a> 
+  {% if user.is_authenticated %}
+  {{ user.get_username }} <a href="#">Log out</a> 
   {% else %}
   <a href="{% url 'sign_up' %}">Sign up</a>
   <a href="{% url 'log_in' %}">Log in</a>

@@ -34,6 +34,5 @@ class FunctionalTest(StaticLiveServerTestCase):
         listbox_select = Select(listbox)
         listbox_select.select_by_visible_text(item_name)
 
-
     def get_body_text(self):
         return self.browser.find_element_by_tag_name('body').text
