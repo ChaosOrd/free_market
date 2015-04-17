@@ -1,8 +1,9 @@
-from .base_universe import UniverseTest
+from .base_universe import UniverseTestMixin
+from ..base import FunctionalTest
 from selenium import webdriver
 
 
-class CreateBasicPopulationTest(UniverseTest):
+class CreateBasicPopulationTest(FunctionalTest, UniverseTestMixin):
 
     def test_can_create_a_population_and_get_see_it_later(self):
         # Yulia found out about a web site that simulates a free marked

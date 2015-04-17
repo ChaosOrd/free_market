@@ -1,8 +1,9 @@
-from .base_universe import UniverseTest
+from .base_universe import UniverseTestMixin
+from ..base import FunctionalTest
 from population.models import Resource
 
 
-class CreatePopulationWithSupplyAndDemandTest(UniverseTest):
+class CreatePopulationWithSupplyAndDemandTest(FunctionalTest, UniverseTestMixin):
 
     def setUp(self):
         super().setUp()

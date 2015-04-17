@@ -1,7 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
+from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.auth import (
+    BACKEND_SESSION_KEY, SESSION_KEY, get_user_model
+)
+User = get_user_model()
 
 
 class FunctionalTest(StaticLiveServerTestCase):
@@ -36,3 +42,11 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def get_body_text(self):
         return self.browser.find_element_by_tag_name('body').text
+
+    def create_pre_authenticated_session(self, username):
+        user = User.objects.create(username=username)
+        session = SessionStore()
+        session[SESSION_KEY] = user.pk
+        session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
+        session.save()
+        return session.session_key

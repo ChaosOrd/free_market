@@ -1,11 +1,9 @@
-from ..base import FunctionalTest
-
 UNIVERSE_TB_ID = 'id_universe_name'
 POP_NAME_ID = 'id_name'
 POP_QTY_ID = 'id_quantity'
 SAVE_ID = 'id_save'
 
-class UniverseTest(FunctionalTest):
+class UniverseTestMixin(object):
 
     def set_universe_name(self, universe_name):
         universe_name_tb = self._get_universe_name_tb()

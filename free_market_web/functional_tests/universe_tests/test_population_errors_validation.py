@@ -1,7 +1,8 @@
-from .base_universe import UniverseTest
+from .base_universe import UniverseTestMixin
+from ..base import FunctionalTest
 
 
-class PopCreationValidationErrorsTest(UniverseTest):
+class PopCreationValidationErrorsTest(FunctionalTest, UniverseTestMixin):
 
     def test_forms_validation(self):
 

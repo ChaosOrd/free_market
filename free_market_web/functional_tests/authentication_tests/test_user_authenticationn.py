@@ -1,28 +1,8 @@
 from ..base import FunctionalTest
+from .base_authentication import AuthenticationTestMixin
 
 
-class SignUpTest(FunctionalTest):
-
-    def get_username_tb(self):
-        return self.browser.find_element_by_id('id_username')
-
-    def get_password1_tb(self):
-        return self.browser.find_element_by_id('id_password1')
-
-    def get_password2_tb(self):
-        return self.browser.find_element_by_id('id_password2')
-
-    def fill_username_tb(self, value):
-        return self.get_username_tb().send_keys(value)
-
-    def fill_password1_tb(self, value):
-        self.get_password1_tb().send_keys(value)
-
-    def fill_password2_tb(self, value):
-        self.get_password2_tb().send_keys(value)
-
-    def submit(self):
-        self.browser.find_element_by_id('id_submit').click()
+class SignUpTest(FunctionalTest, AuthenticationTestMixin):
 
     def test_basic_account_creation_and_loggin_in(self):
 
@@ -70,7 +50,7 @@ class SignUpTest(FunctionalTest):
 
         # She enters her credentials and submits the form
         self.fill_username_tb('Yulia')
-        self.browser.find_element_by_id('id_password').send_keys('Bfc#hgoro')
+        self.fill_password_tb('Bfc#hgoro')
         self.submit()
 
         # She sees that she has successfully logged in
