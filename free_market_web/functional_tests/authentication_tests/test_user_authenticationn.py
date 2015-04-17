@@ -77,3 +77,11 @@ class SignUpTest(FunctionalTest):
         body_text = self.get_body_text()
         self.assertIn('Yulia', body_text)
         self.assertIn('Log out', body_text)
+
+        # She tries to log out next
+        self.browser.find_element_by_link_text('Log out').click()
+
+        # The log out operation was successful and the log in link is back
+        body_text = self.get_body_text()
+        self.assertIn('Log in', body_text)
+        self.assertIn('Sign up', body_text)
