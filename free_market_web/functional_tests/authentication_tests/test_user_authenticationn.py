@@ -1,5 +1,5 @@
 from ..base import FunctionalTest
-from .base_authentication import AuthenticationTestMixin
+from ..base_authentication import AuthenticationTestMixin
 
 
 class SignUpTest(FunctionalTest, AuthenticationTestMixin):

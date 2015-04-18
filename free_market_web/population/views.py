@@ -1,4 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views.generic import View
 from .forms import NewPopulationForm, SupplyDemandForm, UniverseForm
 from population.models import Population, Universe
@@ -18,6 +20,10 @@ def delete_population(request, population_id):
     universe = population.universe
     population.delete()
     return redirect(universe)
+
+@login_required
+def my_universes_view(request):
+    return render(request, 'my_universes.html')
 
 
 class BaseUniverseView(View):
@@ -64,6 +70,10 @@ class NewUniverseView(BaseUniverseView):
     @property
     def template_name(self):
         return 'new_universe.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request):
         self.pop_form = NewPopulationForm()

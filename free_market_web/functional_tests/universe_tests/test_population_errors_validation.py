@@ -1,8 +1,11 @@
 from .base_universe import UniverseTestMixin
 from ..base import FunctionalTest
+from ..base_authentication import (AuthenticationTestMixin, requires_logged_in_user)
 
 
-class PopCreationValidationErrorsTest(FunctionalTest, UniverseTestMixin):
+@requires_logged_in_user
+class PopCreationValidationErrorsTest(FunctionalTest, UniverseTestMixin,
+                                      AuthenticationTestMixin):
 
     def test_forms_validation(self):
 

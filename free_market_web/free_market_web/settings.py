@@ -115,4 +115,5 @@ STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '../static'))
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'free_market_web', 'static'),
 )
+LOGIN_URL = '/accounts/log_in'
 LOGIN_REDIRECT_URL = '/'

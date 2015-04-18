@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .base_authentication import AuthenticationTestMixin
+from ..base_authentication import AuthenticationTestMixin
 from ..base import FunctionalTest
 from ..universe_tests.base_universe import UniverseTestMixin
 
@@ -21,28 +21,34 @@ class MyUniversesTest(FunctionalTest, AuthenticationTestMixin, UniverseTestMixin
         pavel = User.objects.create_user(username=USERNAME2, password=PASSWORD2)
         pavel.save()
 
+    def click_on_my_universes(self):
+        self.browser.find_element_by_link_text('My universes').click()
+
+
     def test_authenticated_user_sees_his_universes(self):
         # Yulia has found the option to see the universes
         # she has created earlier
 
         self.browser.get(self.server_url)
 
+        # She clicks on my universes and redirected to log in
+        self.click_on_my_universes()
+
         # She loggs in
-        self.browser.find_element_by_link_text('Log in').click()
         self.fill_username_tb(USERNAME1)
         self.fill_password_tb(PASSWORD1)
         self.submit()
 
         # She creates a universe
+        self.click_on_new_universe()
         self.set_universe_name('Test universe')
         self.set_population_name('Farmers')
         self.set_population_quantity('10')
-        self.browser.find_element_by_id('id_save').click()
+        self.click_on_save()
 
-        # She goes back to home page
+        # She goes back to home page and clicks on "My universes"
         self.browser.get(self.server_url)
-
-        self.browser.find_element_by_link_text('My universes').click()
+        self.click_on_my_universes()
 
         body_text = self.get_body_text()
 
@@ -67,16 +73,16 @@ class MyUniversesTest(FunctionalTest, AuthenticationTestMixin, UniverseTestMixin
         self.set_universe_name("Pavel's universe")
         self.set_population_name('Munchkins')
         self.set_population_quantity('14')
-        self.browser.find_element_by_id('id_save').click()
+        self.click_on_save()
 
         # He goes back to home page and creates another universe
         self.set_universe_name("Finite supply universe")
         self.set_population_name('Laborers')
         self.set_population_quantity('112')
-        self.browser.find_element_by_id('id_save').click()
+        self.click_on_save()
 
         # He goes back to the main meny and checks his universes
-        self.browser.find_element_by_id('My universes').click()
+        self.click_on_my_universes()
 
         # He sees the universes he has created
         body_text = self.get_body_text()

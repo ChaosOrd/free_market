@@ -1,8 +1,10 @@
 from ..base import FunctionalTest
 from population.models import Resource, Population, Universe, SupplyDemand
+from ..base_authentication import (AuthenticationTestMixin, requires_logged_in_user)
 
 
-class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
+class CreatePopulationWithSupplyAndDemandTest(FunctionalTest,
+                                              AuthenticationTestMixin):
 
     def setUp(self):
         super().setUp()
@@ -36,6 +38,7 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest):
         SupplyDemand.objects.create(population=self.second_pop,
                                     resource=self.vodka, value=2.5)
 
+    @requires_logged_in_user
     def test_population_deletion(self):
         # Uncle Bob decides to check out the previously created universe
         universe_url = self.live_server_url + '/population/universe/0/'

@@ -1,9 +1,11 @@
 from .base_universe import UniverseTestMixin
 from ..base import FunctionalTest
 from population.models import Resource
+from ..base_authentication import (AuthenticationTestMixin, requires_logged_in_user)
 
 
-class CreatePopulationWithSupplyAndDemandTest(FunctionalTest, UniverseTestMixin):
+class CreatePopulationWithSupplyAndDemandTest(FunctionalTest, UniverseTestMixin,
+                                              AuthenticationTestMixin):
 
     def setUp(self):
         super().setUp()
@@ -34,6 +36,7 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest, UniverseTestMixin)
     def get_sd_value_id(self, sd_index):
         return 'id_sd_{}-value'.format(sd_index)
 
+    @requires_logged_in_user
     def test_can_create_a_population_with_demand_and_get_see_it_later(self):
         # Yulia have decided to create a universe with populations
         # that actually have consumption and production
@@ -101,6 +104,7 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest, UniverseTestMixin)
         self.assertIn('Bread', page_text)
         self.assertIn('0.3', page_text)
 
+    @requires_logged_in_user
     def test_form_validation_with_supply_and_demand(self):
 
         # Uncle Bob wants to create a new universe

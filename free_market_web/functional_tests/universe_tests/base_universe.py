@@ -3,6 +3,7 @@ POP_NAME_ID = 'id_name'
 POP_QTY_ID = 'id_quantity'
 SAVE_ID = 'id_save'
 
+
 class UniverseTestMixin(object):
 
     def set_universe_name(self, universe_name):
@@ -38,6 +39,9 @@ class UniverseTestMixin(object):
 
     def click_on_save(self):
         self.browser.find_element_by_id(SAVE_ID).click()
+
+    def click_on_new_universe(self):
+        self.browser.find_element_by_link_text('New universe').click()
 
     def _get_universe_name_tb(self):
         return self.browser.find_element_by_id(UNIVERSE_TB_ID)

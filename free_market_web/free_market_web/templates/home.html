@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Free Market{% endblock %}
 {% block content %}
-<a href="{% url 'new_universe' %}">New universe</a>
+<ul>
+  <li>
+    <a href="{% url 'new_universe' %}">New universe</a>
+  </li>
+  <li>
+    <a href="{% url 'my_universes' %}">My universes</a>
+  </li>
+</ul>
 {% endblock %}

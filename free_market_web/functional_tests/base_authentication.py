@@ -1,3 +1,6 @@
+from django.contrib.auth.models import User
+
+
 class AuthenticationTestMixin(object):
 
     def get_username_tb(self):
@@ -26,3 +29,27 @@ class AuthenticationTestMixin(object):
 
     def submit(self):
         self.browser.find_element_by_id('id_submit').click()
+
+    def log_in(self, username, password):
+        self._create_user(username, password)
+        self.login_user(username, password)
+
+    def _create_user(self, username, password):
+        user = User.objects.create_user(username, password=password)
+        user.save()
+
+    def login_user(self, username, password):
+        self.browser.get(self.server_url)
+        self.browser.find_element_by_link_text('Log in').click()
+        self.fill_username_tb(username)
+        self.fill_password_tb(password)
+        self.submit()
+
+def requires_logged_in_user(func, username='DefaultUsername',
+                 password='DefaultPassword'):
+
+    def wrapper(self, *args, **kwargs):
+        self.log_in(username, password)
+        func(self, *args, **kwargs)
+
+    return wrapper
