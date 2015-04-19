@@ -1,12 +1,13 @@
 from django.http.request import HttpRequest
 from django.test import TestCase
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 class BaseUniverseTestCase(TestCase):
 
     def setUp(self):
         self.request = HttpRequest()
+        self.request.user = Mock()
         self.create_class_mocks()
         self.create_instance_mocks()
 

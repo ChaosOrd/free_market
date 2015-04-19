@@ -1,10 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 
 class Universe(models.Model):
 
     universe_name = models.TextField()
+    owner = models.ForeignKey(User)
 
     @staticmethod
     def create_new():

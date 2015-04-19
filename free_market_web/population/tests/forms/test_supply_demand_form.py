@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.contrib.auth.models import User
 from population.forms import (SupplyDemandForm, INVALID_SD_VALUE_ERROR,
                               EMPTY_SD_VALUE_ERROR, EMPTY_RESOURCE_ERROR)
 from unittest.mock import Mock, patch
@@ -10,6 +11,9 @@ class TestSupplyDemandForm(TestCase):
     def setUp(self):
         self.supply_demand_patcher = patch('population.forms.SupplyDemand')
         self.supply_demand_cls = self.supply_demand_patcher.start()
+        universe_owner = User.objects.create_user('sample_user')
+        self.universe = Universe.objects.create(universe_name='sample_universe',
+                                                owner=universe_owner)
 
     def tearDown(self):
         self.supply_demand_patcher.stop()
@@ -28,8 +32,7 @@ class TestSupplyDemandForm(TestCase):
 
     def test_validation_all_fields_valid_with_no_prefix(self):
         resource = Resource.objects.create(id=1, name='Bread')
-        universe = Universe.objects.create()
-        population= Population.objects.create(id=1, universe=universe,
+        population= Population.objects.create(id=1, universe=self.universe,
                                               name='Farmers', quantity=10)
 
 
@@ -40,8 +43,7 @@ class TestSupplyDemandForm(TestCase):
 
     def test_validation_all_fields_valid_with_prefix(self):
         resource = Resource.objects.create(id=1, name='Bread')
-        universe = Universe.objects.create()
-        population= Population.objects.create(id=1, universe=universe,
+        population= Population.objects.create(id=1, universe=self.universe,
                                               name='Farmers', quantity=10)
 
         sd_form = SupplyDemandForm(data={'sd_0-population': 1,

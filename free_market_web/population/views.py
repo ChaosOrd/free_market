@@ -21,6 +21,7 @@ def delete_population(request, population_id):
     population.delete()
     return redirect(universe)
 
+
 @login_required
 def my_universes_view(request):
     return render(request, 'my_universes.html')
@@ -30,6 +31,7 @@ class BaseUniverseView(View):
 
     def save_forms_data(self, request):
         if self.universe_form.is_valid() and self.pop_form.is_valid():
+            import pdb; pdb.set_trace()  # XXX BREAKPOINT
             universe = self.universe_form.save()
             self.pop_form.save(for_universe=universe)
             return redirect(universe)
@@ -61,7 +63,9 @@ class ExistingUniverseView(BaseUniverseView):
     def post(self, request, universe_id):
         universe = Universe.objects.get(id=universe_id)
         self.pop_form = NewPopulationForm(data=request.POST)
-        self.universe_form = UniverseForm(data=request.POST, instance=universe)
+        self.universe_form = UniverseForm(data=request.POST,
+                                          owner=request.user,
+                                          instance=universe)
         return self.save_forms_data(request)
 
 
@@ -82,5 +86,6 @@ class NewUniverseView(BaseUniverseView):
 
     def post(self, request):
         self.pop_form = NewPopulationForm(data=request.POST)
-        self.universe_form = UniverseForm(data=request.POST)
+        self.universe_form = UniverseForm(data=request.POST,
+                                          owner=request.user)
         return self.save_forms_data(request)

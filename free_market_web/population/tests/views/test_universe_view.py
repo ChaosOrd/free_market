@@ -38,7 +38,7 @@ class TestBaseUniverseView(BaseUniverseTestCase):
         self.redirect_mock.assert_called_once_with(
             self.universe_view.universe_form.save.return_value)
 
-    def test_redirects_to_universe_form_if_all_sd_forms_valid(self):
+    def test_save_forms_redirects_to_universe_form_if_all_sd_forms_valid(self):
         self.universe_view.pop_form.is_valid.return_value = True
         self.universe_view.universe_form.is_valid.return_value = True
 
@@ -47,7 +47,7 @@ class TestBaseUniverseView(BaseUniverseTestCase):
         self.redirect_mock.assert_called_once_with(
             self.universe_view.universe_form.save.return_value)
 
-    def test_does_not_save_if_pop_form_is_invalid(self):
+    def test_save_forms_does_not_save_if_pop_form_is_invalid(self):
         self.universe_view.pop_form.is_valid.return_value = False
 
         self.universe_view.save_forms_data(self.request)
@@ -55,7 +55,7 @@ class TestBaseUniverseView(BaseUniverseTestCase):
         self.assertFalse(self.universe_view.pop_form.save.called)
         self.assertFalse(self.universe_view.universe_form.save.called)
 
-    def test_does_not_save_if_universe_form_is_invalid(self):
+    def test_save_forms_does_not_save_if_universe_form_is_invalid(self):
         self.universe_view.universe_form.is_valid.return_value = False
 
         self.universe_view.save_forms_data(self.request)
@@ -75,11 +75,12 @@ class TestExistingUniverseView(BaseUniverseTestCase):
 
         self.pop_form_cls.assert_called_once_with(data=self.request.POST)
 
-    def test_post_passes_POST_and_instance_to_universe_form(self):
+    def test_post_passes_data_to_universe_form(self):
         self.universe_view.post(self.request, 1)
 
-        self.universe_form_cls.assert_called_once_with(data=self.request.POST,
-                                                       instance=self.universe)
+        self.universe_form_cls.assert_called_once_with(
+            data=self.request.POST, owner=self.request.user,
+            instance=self.universe)
 
     def test_renderes_universe_template_if_form_invalid(self):
         self.pop_form.is_valid.return_value = False
@@ -123,7 +124,7 @@ class TestNewUniverseView(BaseUniverseTestCase):
         super().create_class_mocks()
         self.universe_view = NewUniverseView()
 
-    def test_renderes_universe_template_if_form_invalid(self):
+    def test_post_renderes_universe_template_if_form_invalid(self):
         self.pop_form.is_valid.return_value = False
 
         self.universe_view.post(self.request)
@@ -144,10 +145,11 @@ class TestNewUniverseView(BaseUniverseTestCase):
             self.request, 'new_universe.html', {'pop_form': self.pop_form,
                                                 'universe_form': self.universe_form})
 
-    def test_post_passes_POST_data_to_universe_form(self):
+    def test_post_passes_data_to_universe_form(self):
         self.universe_view.post(self.request)
 
-        self.universe_form_cls.assert_called_once_with(data=self.request.POST)
+        self.universe_form_cls.assert_called_once_with(data=self.request.POST,
+                                                       owner=self.request.user)
 
     def test_post_returns_save_forms_data_return_value(self):
         self.universe_view.save_forms_data = Mock()
