@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
 from ..base_authentication import AuthenticationTestMixin
 from ..base import FunctionalTest
 from ..universe_tests.base_universe import UniverseTestMixin
@@ -23,7 +22,6 @@ class MyUniversesTest(FunctionalTest, AuthenticationTestMixin, UniverseTestMixin
 
     def click_on_my_universes(self):
         self.browser.find_element_by_link_text('My universes').click()
-
 
     def test_authenticated_user_sees_his_universes(self):
         # Yulia has found the option to see the universes
@@ -70,6 +68,7 @@ class MyUniversesTest(FunctionalTest, AuthenticationTestMixin, UniverseTestMixin
         self.submit()
 
         # Pavel creates own universe
+        self.click_on_new_universe()
         self.set_universe_name("Pavel's universe")
         self.set_population_name('Munchkins')
         self.set_population_quantity('14')
@@ -82,11 +81,12 @@ class MyUniversesTest(FunctionalTest, AuthenticationTestMixin, UniverseTestMixin
         self.click_on_save()
 
         # He goes back to the main meny and checks his universes
+        self.browser.get(self.server_url)
         self.click_on_my_universes()
 
         # He sees the universes he has created
         body_text = self.get_body_text()
-        self.assertIn("Pavel's universe", body_text)
+        self.assertNotIn("Pavel's universe", body_text)
         self.assertIn('Finite supply universe', body_text)
 
         # But not the universes of previous user

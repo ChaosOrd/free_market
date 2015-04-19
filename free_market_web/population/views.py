@@ -24,7 +24,8 @@ def delete_population(request, population_id):
 
 @login_required
 def my_universes_view(request):
-    return render(request, 'my_universes.html')
+    my_universes = Universe.objects.filter(owner=request.user)
+    return render(request, 'my_universes.html', {'my_universes': my_universes})
 
 
 class BaseUniverseView(View):

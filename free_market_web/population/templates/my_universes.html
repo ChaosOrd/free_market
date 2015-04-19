@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+  {% for universe in my_universes %}
+  <li>
+    <a href="{% url 'universe' universe.id %}">{{ universe.universe_name }}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
