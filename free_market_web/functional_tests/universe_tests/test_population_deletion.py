@@ -1,6 +1,7 @@
 from ..base import FunctionalTest
 from population.models import Resource, Population, Universe, SupplyDemand
 from ..base_authentication import (AuthenticationTestMixin, requires_logged_in_user)
+from django.contrib.auth.models import User
 
 
 class CreatePopulationWithSupplyAndDemandTest(FunctionalTest,
@@ -20,7 +21,9 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest,
         self.vodka = Resource.objects.create(name='Vodka')
 
     def _create_universe_fixtures(self):
-        self.universe = Universe.objects.create(id=0, universe_name='My universe')
+        owner = User.objects.create_user('sample_user')
+        self.universe = Universe.objects.create(id=0, universe_name='My universe',
+                                                owner=owner)
 
     def _create_population_fixtures(self):
         self.first_pop = Population.objects.create(universe=self.universe,

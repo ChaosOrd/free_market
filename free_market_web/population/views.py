@@ -31,8 +31,9 @@ class BaseUniverseView(View):
 
     def save_forms_data(self, request):
         if self.universe_form.is_valid() and self.pop_form.is_valid():
-            import pdb; pdb.set_trace()  # XXX BREAKPOINT
-            universe = self.universe_form.save()
+            universe = self.universe_form.save(commit=False)
+            universe.owner = request.user
+            universe.save()
             self.pop_form.save(for_universe=universe)
             return redirect(universe)
         else:
@@ -64,7 +65,6 @@ class ExistingUniverseView(BaseUniverseView):
         universe = Universe.objects.get(id=universe_id)
         self.pop_form = NewPopulationForm(data=request.POST)
         self.universe_form = UniverseForm(data=request.POST,
-                                          owner=request.user,
                                           instance=universe)
         return self.save_forms_data(request)
 
@@ -86,6 +86,5 @@ class NewUniverseView(BaseUniverseView):
 
     def post(self, request):
         self.pop_form = NewPopulationForm(data=request.POST)
-        self.universe_form = UniverseForm(data=request.POST,
-                                          owner=request.user)
+        self.universe_form = UniverseForm(data=request.POST)
         return self.save_forms_data(request)

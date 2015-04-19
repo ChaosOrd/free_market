@@ -6,10 +6,13 @@ from unittest.mock import Mock, patch
 class BaseUniverseTestCase(TestCase):
 
     def setUp(self):
-        self.request = HttpRequest()
-        self.request.user = Mock()
+        self.create_request_mock()
         self.create_class_mocks()
         self.create_instance_mocks()
+
+    def create_request_mock(self):
+        self.request = HttpRequest()
+        self.request.user = Mock()
 
     def create_class_mocks(self):
         self.pop_form_patcher = patch('population.views.NewPopulationForm')

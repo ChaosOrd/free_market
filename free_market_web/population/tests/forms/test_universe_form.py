@@ -20,21 +20,6 @@ class TestUniverseForm(TestCase):
         self.assertEqual(form.errors['universe_name'],
                          [EMPTY_UNIVERSE_NAME_ERROR])
 
-    def test_init_sets_owner_field(self):
-        owner = Mock()
-
-        form = UniverseForm(data={}, owner=owner)
-
-        self.assertEqual(form.owner, owner)
-
-    def test_validation_sets_owner_in_clean_data(self):
-        owner = Mock()
-        form = UniverseForm(data={}, owner=owner)
-
-        form.is_valid()
-
-        self.assertEqual(form.cleaned_data['owner'], owner)
-
     """
     def test_save_creates_universe_if_no_instance_provided_to_model(self):
         form = UniverseForm(data={'universe_name': 'My universe'})

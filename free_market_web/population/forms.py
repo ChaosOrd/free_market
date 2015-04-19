@@ -101,14 +101,6 @@ EMPTY_UNIVERSE_NAME_ERROR = 'Universe name can not be empty'
 
 class UniverseForm(forms.ModelForm):
 
-    def __init__(self, owner=None, *args, **kwargs):
-        self.owner = owner
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        super().clean()
-        self.cleaned_data['owner'] = self.owner
-
     class Meta:
         model = Universe
         fields = ('universe_name',)
