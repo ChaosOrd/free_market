@@ -21,7 +21,7 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest,
         self.vodka = Resource.objects.create(name='Vodka')
 
     def _create_universe_fixtures(self):
-        owner = User.objects.create_user('sample_user')
+        owner = User.objects.create_user('sample_user', password='sample_pass')
         self.universe = Universe.objects.create(id=0, universe_name='My universe',
                                                 owner=owner)
 
@@ -41,7 +41,8 @@ class CreatePopulationWithSupplyAndDemandTest(FunctionalTest,
         SupplyDemand.objects.create(population=self.second_pop,
                                     resource=self.vodka, value=2.5)
 
-    @requires_logged_in_user
+    @requires_logged_in_user(username='sample_user', password='sample_pass',
+                             create_user=False)
     def test_population_deletion(self):
         # Uncle Bob decides to check out the previously created universe
         universe_url = self.live_server_url + '/population/universe/0/'

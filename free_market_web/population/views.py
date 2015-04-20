@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -58,12 +59,20 @@ class ExistingUniverseView(BaseUniverseView):
 
     def get(self, request, universe_id):
         universe = Universe.objects.get(id=universe_id)
+
+        if universe.owner != request.user:
+            raise PermissionDenied()
+
         self.pop_form = NewPopulationForm()
         self.universe_form = UniverseForm(instance=universe)
         return self._render_forms(request)
 
     def post(self, request, universe_id):
         universe = Universe.objects.get(id=universe_id)
+
+        if request.user != universe.owner:
+            raise PermissionDenied()
+
         self.pop_form = NewPopulationForm(data=request.POST)
         self.universe_form = UniverseForm(data=request.POST,
                                           instance=universe)

@@ -1,4 +1,5 @@
 from .base import BaseUniverseTestCase
+from django.core.exceptions import PermissionDenied
 from population.views import (BaseUniverseView, ExistingUniverseView,
                               NewUniverseView)
 from unittest.mock import Mock
@@ -73,6 +74,10 @@ class TestBaseUniverseView(BaseUniverseTestCase):
 
 class TestExistingUniverseView(BaseUniverseTestCase):
 
+    def setUp(self):
+        super().setUp()
+        self.universe.owner = self.request.user
+
     def create_class_mocks(self):
         super().create_class_mocks()
         self.universe_view = ExistingUniverseView()
@@ -98,6 +103,13 @@ class TestExistingUniverseView(BaseUniverseTestCase):
                                                  {'pop_form': self.pop_form,
                                                   'universe_form': self.universe_form})
 
+    def test_post_raises_permission_denied_if_universe_owned_by_other(self):
+        other_user = Mock()
+        self.universe.owner = other_user
+
+        with self.assertRaises(PermissionDenied):
+            self.universe_view.post(self.request, 2)
+
     def test_get_request_renderes_universe_template(self):
         self.universe_view.get(self.request, 1)
 
@@ -115,6 +127,12 @@ class TestExistingUniverseView(BaseUniverseTestCase):
         self.universe_view.get(self.request, 1)
 
         self.universe_form_cls.assert_called_once_with(instance=self.universe)
+
+    def test_get_raises_permission_denied_if_not_owned_by_me(self):
+        self.universe.owner = Mock()
+
+        with self.assertRaises(PermissionDenied):
+            self.universe_view.get(self.request, 1)
 
     def test_post_returns_save_forms_data_return_value(self):
         self.universe_view.save_forms_data = Mock()
@@ -155,7 +173,6 @@ class TestNewUniverseView(BaseUniverseTestCase):
         self.universe_view.post(self.request)
 
         self.universe_form_cls.assert_called_once_with(data=self.request.POST)
-
 
     def test_post_returns_save_forms_data_return_value(self):
         self.universe_view.save_forms_data = Mock()

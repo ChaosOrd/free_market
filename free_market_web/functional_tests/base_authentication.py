@@ -30,8 +30,9 @@ class AuthenticationTestMixin(object):
     def submit(self):
         self.browser.find_element_by_id('id_submit').click()
 
-    def log_in(self, username, password):
-        self._create_user(username, password)
+    def log_in(self, username, password, create_user=True):
+        if create_user:
+            self._create_user(username, password)
         self.login_user(username, password)
 
     def _create_user(self, username, password):
@@ -45,11 +46,15 @@ class AuthenticationTestMixin(object):
         self.fill_password_tb(password)
         self.submit()
 
-def requires_logged_in_user(func, username='DefaultUsername',
-                 password='DefaultPassword'):
 
-    def wrapper(self, *args, **kwargs):
-        self.log_in(username, password)
-        func(self, *args, **kwargs)
+def requires_logged_in_user(username='DefaultUsername',
+                            password='DefaultPassword',
+                            create_user=False):
 
-    return wrapper
+    def wrap(func):
+        def wrapped_func(self, *args, **kwargs):
+            self.log_in(username, password, create_user)
+            func(self, *args, **kwargs)
+
+        return wrapped_func
+    return wrap
