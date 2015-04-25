@@ -1,6 +1,5 @@
-from collections import Counter
 import unittest
-from unittest import TestCase, skip
+from unittest import TestCase
 from unittest.mock import Mock, patch, call
 from simulation.simulator import Simulator
 
@@ -12,6 +11,7 @@ class SimulatorTest(TestCase):
         self.universe = Mock()
         self.init_populations()
         self.init_persons()
+        self.calls = []
 
     def init_patchers(self):
         self.person_patcher = patch('simulation.simulator.Person')
@@ -33,6 +33,9 @@ class SimulatorTest(TestCase):
         self.person3 = Mock()
         self.person_cls.from_population.side_effect = \
             [self.person1, self.person2, self.person3]
+
+    def add_call(self, method_name):
+        self.calls.append(method_name)
 
     def tearDown(self):
         self.person_patcher.stop()
@@ -63,24 +66,45 @@ class SimulatorTest(TestCase):
 
         self.exchange_cls.assert_called_once_with()
 
-    @skip('Implement later')
     def test_simulate_calls_methods_in_right_order(self):
-        self_mock = Mock()
-
-        Simulator.simulate(self_mock, self.universe)
-
-        self_mock._create_persons.assert_has_calls(
-            call(self_mock, self.universe), call(self_mock, self.universe))
-
-    @skip('Implement later')
-    def test_simulate_calls_person_tick_default_amount_of_times(self):
         simulator = Simulator()
+        simulator._create_persons = Mock()
+        simulator._run_iterations = Mock()
+
+        def create_persons_called(*args, **kwargs):
+            self.calls.append("create_persons")
+
+        simulator._create_persons.side_effect = create_persons_called
+
+        def run_iterations_called(*args, **kwargs):
+            self.calls.append("run_iterations")
+
+        simulator._run_iterations.side_effect = run_iterations_called
 
         simulator.simulate(self.universe)
 
-        self.person1.tick.assert_called_once_with()
-        self.person2.tick.assert_called_once_with()
-        self.person3.tick.assert_called_once_with()
+        self.assertEquals(self.calls[0], 'create_persons')
+        self.assertEquals(self.calls[1], 'run_iterations')
+
+    def test_run_iterations_calls_simulate_iteration_default_number_of_times(self):
+        simulator = Simulator()
+        simulator._simulate_iteration = Mock()
+        Simulator.NUM_OF_ITERATIONS = 10
+
+        simulator._run_iterations()
+
+        calls = [call() for idx in range(10)]
+        simulator._simulate_iteration.assert_has_calls(calls)
+
+    def test_simulate_iteration_calls_on_iteration_on_each_person(self):
+        simulator = Simulator()
+        simulator._persons = [self.person1, self.person2, self.person3]
+
+        simulator._simulate_iteration()
+
+        self.person1.on_iteration.assert_called_once_with()
+        self.person2.on_iteration.assert_called_once_with()
+        self.person3.on_iteration.assert_called_once_with()
 
 if __name__ == '__main__':
     unittest.main()

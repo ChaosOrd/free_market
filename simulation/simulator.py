@@ -1,10 +1,15 @@
+import random
+
 class Simulator(object):
+
+    NUM_OF_ITERATIONS = 100
 
     def __init__(self):
         self._persons = []
 
     def simulate(self, universe):
         self._create_persons(universe)
+        self._run_iterations()
 
     def _create_persons(self, universe):
         exchange = Exchange()
@@ -17,15 +22,70 @@ class Simulator(object):
             person = Person.from_population(pop, exchange)
             self._persons.append(person)
 
+    def _run_iterations(self):
+        for iteration in range(self.NUM_OF_ITERATIONS):
+            self._simulate_iteration()
+
+    def _simulate_iteration(self):
+        for person in self._persons:
+            person.on_iteration()
+
 
 class Person(object):
+    MIN_RANDOM_PRICE = 100
+    MAX_RANDOM_PRICE = 200
+
+    def __init__(self, population, exchange):
+        self.population = population
+        self.exchange = exchange
+        self.inventory = {}
 
     @classmethod
     def from_population(cls, population, exchange):
-        pass
+        persons = []
+        initial_person = cls._single_person_from_population(population, exchange)
 
-    def tick(self):
-        pass
+        for person_idx in range(population.quantity):
+            persons.append(initial_person.copy())
+
+        return persons
+
+
+    @classmethod
+    def _single_person_from_population(self, population, exchange):
+        return Person(population=population, exchange=exchange)
+
+    def copy(self):
+        return Person(self.population, self.exchange)
+
+    def on_iteration(self):
+        for supply_demand in self.population.supplies_demands:
+            order = self._create_order_to_handle_supply_demand(supply_demand)
+            self.exchange.place_order(order)
+
+    def _create_order_to_handle_supply_demand(self, supply_demand):
+        if (supply_demand.value < 0):
+            order = self._create_buy_order(supply_demand)
+        else:
+            order = self._create_sell_order(supply_demand)
+        return order
+
+    def _create_sell_order(self, supply):
+        order = Order(resource=supply.resource,
+                      price=random.randint(self.MIN_RANDOM_PRICE,
+                                           self.MAX_RANDOM_PRICE),
+                      quantity=supply.value)
+        return order
+
+    def _create_buy_order(self, demand):
+        best_sell = self.exchange.get_best_sell()
+        order = Order(resource=demand.resource,
+                      price=best_sell.price,
+                      quantity=demand.value)
+        return order
 
 class Exchange(object):
+    pass
+
+class Order(object):
     pass
