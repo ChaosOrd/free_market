@@ -8,7 +8,8 @@ class SimulatorTest(TestCase):
 
     def test_from_population_returns_list_of_persons(self):
         population = Mock()
-        persons = Person.from_population(population)
+        exchange = Mock()
+        persons = Person.from_population(population, exchange)
 
 
 if __name__ == '__main__':
