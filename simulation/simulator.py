@@ -1,5 +1,6 @@
 import random
 
+
 class Simulator(object):
 
     NUM_OF_ITERATIONS = 100
@@ -34,11 +35,21 @@ class Simulator(object):
 class Person(object):
     MIN_RANDOM_PRICE = 100
     MAX_RANDOM_PRICE = 200
+    INITIAL_MONEY = 1000
+    MONEY_RESOURCE_NAME = 'Money'
 
     def __init__(self, population, exchange):
         self.population = population
         self.exchange = exchange
-        self.inventory = {}
+        self.inventory = {self.MONEY_RESOURCE_NAME: self.INITIAL_MONEY}
+
+    @property
+    def money(self):
+        return self.inventory[self.MONEY_RESOURCE_NAME]
+
+    @money.setter
+    def money(self, value):
+        self.inventory[self.MONEY_RESOURCE_NAME] = value
 
     @classmethod
     def from_population(cls, population, exchange):
@@ -49,7 +60,6 @@ class Person(object):
             persons.append(initial_person.copy())
 
         return persons
-
 
     @classmethod
     def _single_person_from_population(self, population, exchange):
@@ -84,8 +94,24 @@ class Person(object):
                       quantity=demand.value)
         return order
 
+    def on_order_filled(self, order, price, quantity):
+        self.money += price * quantity
+        resource = order.resource
+        self._add_resource_quantity(resource, -quantity)
+
+    def _add_resource_quantity(self, resource, quantity):
+        if resource in self.inventory:
+            self.inventory[resource] += quantity
+        else:
+            self.inventory[resource] = quantity
+
+        if self.inventory[resource] == 0:
+            self.inventory.pop(resource)
+
+
 class Exchange(object):
     pass
+
 
 class Order(object):
     pass

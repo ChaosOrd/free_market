@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch, call
 from simulation.simulator import Person
 
+
 class BasePersonTest(TestCase):
 
     def setUp(self):
@@ -10,19 +11,18 @@ class BasePersonTest(TestCase):
         self.population.quantity = 3
         self.exchange = Mock()
 
+
 class PersonInitializationTest(BasePersonTest):
 
     @patch('simulation.simulator.Person._single_person_from_population')
-    def test_from_population_calls_single_person_from_population(
-        self, single_person_from_population_mock):
+    def test_from_population_calls_single_person_from_population(self, single_person_from_population_mock):
         Person.from_population(self.population, self.exchange)
 
         single_person_from_population_mock.assert_called_once_with(
             self.population, self.exchange)
 
     @patch('simulation.simulator.Person._single_person_from_population')
-    def test_from_population_returns_list_of_copies_from_initial_person(
-        self, single_person_from_population_mock):
+    def test_from_population_returns_list_of_copies_from_initial_person(self, single_person_from_population_mock):
 
         Person.copy = Mock()
         first_person_copy = Mock()
@@ -70,10 +70,11 @@ class PersonInitializationTest(BasePersonTest):
 
         self.assertIsNot(person.inventory, copy_person.inventory)
 
-    def test_constructor_creates_empty_inventory(self):
+    def test_initial_money(self):
         person = Person(Mock(), Mock())
 
-        self.assertEquals(person.inventory, {})
+        self.assertEquals(person.money, Person.INITIAL_MONEY)
+
 
 class PersonOrderPlacementTest(BasePersonTest):
 
@@ -92,6 +93,7 @@ class PersonOrderPlacementTest(BasePersonTest):
     def start_patchers(self):
         self.order_patcher = patch('simulation.simulator.Order')
         self.order_cls = self.order_patcher.start()
+        self.order = self.order_cls.return_value
         self.random_patcher = patch('simulation.simulator.random')
         self.random = self.random_patcher.start()
 
@@ -197,6 +199,56 @@ class PersonOrderPlacementTest(BasePersonTest):
                           call(self.order_cls.return_value)]
         self.exchange.place_order.assert_has_calls(expected_calls)
 
+    def test_on_order_filled_reduces_money_when_buying(self):
+        person = Person(Mock(), Mock())
+        person.money = 100
+
+        person.on_order_filled(self.order, 7, -10)
+
+        self.assertEqual(person.money, 30)
+
+    def test_on_order_filled_adds_money_when_selling(self):
+        person = Person(Mock(), Mock())
+        person.money = 100
+
+        person.on_order_filled(self.order, 8, 6)
+
+        self.assertEqual(person.money, 148)
+
+    def test_on_order_filled_adds_resource_when_buying(self):
+        resource = self.order.resource
+        person = Person(Mock(), Mock())
+
+        person.on_order_filled(self.order, 6, -5)
+
+        self.assertEqual(person.inventory[resource], 5)
+
+    def test_on_order_updates_existing_resource_when_buying(self):
+        resource = self.order.resource
+        person = Person(Mock(), Mock())
+        person.inventory[resource] = 10
+
+        person.on_order_filled(self.order, 6, -5)
+
+        self.assertEquals(person.inventory[resource], 15)
+
+    def test_on_order_filled_substracts_resource_when_selling(self):
+        resource = self.order.resource
+        person = Person(Mock(), Mock())
+        person.inventory[resource] = 6
+
+        person.on_order_filled(self.order, 6, 5)
+
+        self.assertEqual(person.inventory[resource], 1)
+
+    def test_on_order_filled_removes_resource_if_ran_out(self):
+        resource = self.order.resource
+        person = Person(Mock(), Mock())
+        person.inventory[resource] = 7
+
+        person.on_order_filled(self.order, 6, 7)
+
+        self.assertNotIn(resource, person.inventory)
 
 if __name__ == '__main__':
     unittest.main()
