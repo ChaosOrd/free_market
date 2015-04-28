@@ -1,4 +1,6 @@
 import random
+from .exchange import Order
+from .exchange import Exchange
 
 
 class Simulator(object):
@@ -107,11 +109,3 @@ class Person(object):
 
         if self.inventory[resource] == 0:
             self.inventory.pop(resource)
-
-
-class Exchange(object):
-    pass
-
-
-class Order(object):
-    pass
