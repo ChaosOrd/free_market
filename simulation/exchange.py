@@ -8,10 +8,11 @@ class Exchange(object):
 
 class Order(object):
 
-    def __init__(self, resource, price, quantity):
+    def __init__(self, sender, resource, price, quantity):
         self._resource = resource
         self._price = price
         self._quantity = quantity
+        self._sender = sender
 
     @property
     def resource(self):
@@ -24,3 +25,7 @@ class Order(object):
     @property
     def quantity(self):
         return self._quantity
+
+    @property
+    def sender(self):
+        return self._sender

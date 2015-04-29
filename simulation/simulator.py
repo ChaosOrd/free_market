@@ -83,7 +83,7 @@ class Person(object):
         return order
 
     def _create_sell_order(self, supply):
-        order = Order(resource=supply.resource,
+        order = Order(sender=self, resource=supply.resource,
                       price=random.randint(self.MIN_RANDOM_PRICE,
                                            self.MAX_RANDOM_PRICE),
                       quantity=supply.value)
@@ -91,7 +91,7 @@ class Person(object):
 
     def _create_buy_order(self, demand):
         best_sell = self.exchange.get_best_sell()
-        order = Order(resource=demand.resource,
+        order = Order(sender=self, resource=demand.resource,
                       price=best_sell.price,
                       quantity=demand.value)
         return order

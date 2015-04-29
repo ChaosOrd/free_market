@@ -160,10 +160,10 @@ class PersonOrderPlacementTest(BasePersonTest):
 
         person.on_iteration()
 
-        expected_calls = [call(resource=self.water_resource, price=140,
-                               quantity=-1),
-                          call(resource=self.tools_resource, price=240,
-                               quantity=-0.5)]
+        expected_calls = [call(sender=person, resource=self.water_resource,
+                               price=140, quantity=-1),
+                          call(sender=person, resource=self.tools_resource,
+                               price=240, quantity=-0.5)]
         self.order_cls.assert_has_calls(expected_calls, any_order=True)
 
     def test_on_iteration_creates_sell_orders_for_each_supply(self):
@@ -172,10 +172,10 @@ class PersonOrderPlacementTest(BasePersonTest):
 
         person.on_iteration()
 
-        expected_calls = [call(resource=self.grain_resource,
+        expected_calls = [call(sender=person, resource=self.grain_resource,
                                price=self.random.randint.return_value,
                                quantity=7.5),
-                          call(resource=self.potatoes_resource,
+                          call(sender=person, resource=self.potatoes_resource,
                                price=self.random.randint.return_value,
                                quantity=4)]
         self.order_cls.assert_has_calls(expected_calls, any_order=True)
