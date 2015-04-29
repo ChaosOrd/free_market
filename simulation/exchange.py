@@ -1,5 +1,9 @@
 class Exchange(object):
-    pass
+
+    def place_order(self, order):
+        order.sender.on_order_filled(order=order,
+                                     price=order.price,
+                                     quantity=order.quantity)
 
 
 class Order(object):
