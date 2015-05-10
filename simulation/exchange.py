@@ -4,25 +4,37 @@ from math import copysign
 class Exchange(object):
 
     def __init__(self):
-        self.book = []
+        self.__book = []
+        self.__order_sequence_number = 0
 
     def place_order(self, order):
-        self.book.append(order)
+        self.__book.append((self.__order_sequence_number, order))
+        self.__order_sequence_number += 1
 
-        self.book = sorted(self.book, key=lambda o: copysign(o.price, o.quantity))
+        self.__sort_book()
         self.__fill_orders_if_needed()
 
+    def __sort_book(self):
+        def get_order_entry_key(order_entry):
+            order = order_entry[1]
+            return copysign(order.price, order.quantity)
+        self.__book = sorted(self.__book, key=get_order_entry_key)
+
     def __fill_orders_if_needed(self):
-        for idx in range(len(self.book)-1):
-            first_order = self.book[idx]
-            second_order = self.book[idx+1]
-            if (first_order.price >= second_order.price):
-                first_order.sender.on_order_filled(order=first_order,
-                                                   price=second_order.price,
-                                                   quantity=first_order.quantity)
-                second_order.sender.on_order_filled(order=second_order,
-                                                    price=second_order.price,
-                                                    quantity=second_order.quantity)
+        for idx in range(len(self.__book)-1):
+            self.__fill_orders_if_crossing(self.__book[idx],
+                                           self.__book[idx+1])
+
+    def __fill_orders_if_crossing(self, first_entry, second_entry):
+        first_sequence, first_order = first_entry
+        second_sequence, second_order = second_entry
+        if (first_order.price >= second_order.price):
+            price = first_order.price if second_sequence > first_sequence \
+                else second_order.price
+            first_order.sender.on_order_filled(order=first_order, price=price,
+                                               quantity=first_order.quantity)
+            second_order.sender.on_order_filled(order=second_order, price=price,
+                                                quantity=second_order.quantity)
 
 
 class Order(object):
