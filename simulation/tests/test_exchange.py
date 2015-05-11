@@ -60,3 +60,15 @@ class ExchangeTest(TestCase):
             order=self.buy_order, price=10, quantity=-5)
         self.sell_sender.on_order_filled.assert_called_once_with(
             order=self.sell_order, price=10, quantity=5)
+
+    def test_crossing_orders_filled_with_minimal_quantity(self):
+        exchange = Exchange()
+        self.sell_order.quantity = 3
+
+        exchange.place_order(self.buy_order)
+        exchange.place_order(self.sell_order)
+
+        self.buy_sender.on_order_filled.assert_called_once_with(
+            order=self.buy_order, price=10, quantity=-3)
+        self.sell_sender.on_order_filled.assert_called_once_with(
+            order=self.sell_order, price=10, quantity=3)
