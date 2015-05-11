@@ -9,6 +9,11 @@ class Simulator(object):
 
     def __init__(self):
         self._persons = []
+        self.__snapshots = []
+
+    @property
+    def snapshots(self):
+        return self.__snapshots
 
     def simulate(self, universe):
         self._create_persons(universe)
@@ -30,8 +35,11 @@ class Simulator(object):
             self._simulate_iteration()
 
     def _simulate_iteration(self):
+        snapshot = []
         for person in self._persons:
             person.on_iteration()
+            snapshot.append(person.copy())
+        self.snapshots.append(snapshot)
 
 
 class Person(object):
