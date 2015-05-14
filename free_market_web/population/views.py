@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from .forms import NewPopulationForm, SupplyDemandForm, UniverseForm
 from population.models import Population, Universe
+from api import simulator_api
 
 
 def home_page(request):
@@ -27,6 +28,13 @@ def delete_population(request, population_id):
 def my_universes_view(request):
     my_universes = Universe.objects.filter(owner=request.user)
     return render(request, 'my_universes.html', {'my_universes': my_universes})
+
+
+def play_universe(request, universe_id):
+    universe = Universe.objects.get(id=universe_id)
+    simualtion_data = simulator_api.simulate(universe)
+    return render(request, 'play_summary.html',
+                  {'simulation_data': simualtion_data})
 
 
 class BaseUniverseView(View):

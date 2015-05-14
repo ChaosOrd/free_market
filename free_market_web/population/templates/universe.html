@@ -21,5 +21,6 @@
       <a href='{% url 'delete_population' pop.id %}'>Delete</a>
     </li>
   </ul>
+  <a href="{% url 'play_universe' universe_form.instance.id  %}">Play</a>
   {% endfor %}
 {% endblock %}

@@ -47,4 +47,15 @@ class UniversePlayingTest(FunctionalTest, AuthenticationTestMixin):
     @requires_logged_in_user(username='sample_user', password='sample_pass',
                              create_user=False)
     def test_simple_universe_playing(self):
-        pass
+
+        # Pavel decides to simulate trading in his universe
+        self.browser.get(self.server_url)
+        self.browser.find_element_by_link_text('My universes').click()
+        self.browser.find_element_by_link_text('Simple universe').click()
+
+        # He clics a play button
+        self.browser.find_element_by_link_text("Play").click()
+        body = self.get_body_text()
+
+        # And sees some graph image
+        self.assertIn('<Image>', body)
