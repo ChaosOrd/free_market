@@ -112,17 +112,17 @@ class SimulatorTest(TestCase):
 
         simulator._simulate_iteration()
 
-        self.person1.copy.assert_called_once_with()
-        self.person2.copy.assert_called_once_with()
+        self.person1.copy_full.assert_called_once_with()
+        self.person2.copy_full.assert_called_once_with()
 
-    def test_simulate_iteration_adds_copied_persopns(self):
+    def test_simulate_iteration_adds_copied_persons(self):
         simulator = Simulator()
         simulator._persons = [self.person1, self.person2]
 
         simulator._simulate_iteration()
 
-        self.assertIn(self.person1.copy.return_value, simulator.snapshots[0])
-        self.assertIn(self.person2.copy.return_value, simulator.snapshots[0])
+        self.assertIn(self.person1.copy_full.return_value, simulator.snapshots[0])
+        self.assertIn(self.person2.copy_full.return_value, simulator.snapshots[0])
 
 if __name__ == '__main__':
     unittest.main()

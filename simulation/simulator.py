@@ -38,7 +38,7 @@ class Simulator(object):
         snapshot = []
         for person in self._persons:
             person.on_iteration()
-            snapshot.append(person.copy())
+            snapshot.append(person.copy_full())
         self.snapshots.append(snapshot)
 
 
@@ -67,7 +67,7 @@ class Person(object):
         initial_person = cls._single_person_from_population(population, exchange)
 
         for person_idx in range(population.quantity):
-            persons.append(initial_person.copy())
+            persons.append(initial_person.copy_initial())
 
         return persons
 
@@ -75,8 +75,13 @@ class Person(object):
     def _single_person_from_population(self, population, exchange):
         return Person(population=population, exchange=exchange)
 
-    def copy(self):
+    def copy_initial(self) -> "Person":
         return Person(self.population, self.exchange)
+
+    def copy_full(self):
+        person = self.copy_initial()
+        person.inventory = self.inventory.copy()
+        return person
 
     def on_iteration(self):
         for supply_demand in self.population.supplies_demands:

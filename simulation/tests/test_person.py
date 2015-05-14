@@ -24,13 +24,13 @@ class PersonInitializationTest(BasePersonTest):
     @patch('simulation.simulator.Person._single_person_from_population')
     def test_from_population_returns_list_of_copies_from_initial_person(self, single_person_from_population_mock):
 
-        Person.copy = Mock()
+        Person.copy_initial = Mock()
         first_person_copy = Mock()
         second_person_copy = Mock()
         third_person_copy = Mock()
         initial_person = single_person_from_population_mock.return_value
-        initial_person.copy.side_effect = [first_person_copy, second_person_copy,
-                                           third_person_copy]
+        initial_person.copy_initial.side_effect = [first_person_copy, second_person_copy,
+                                                   third_person_copy]
 
         persons = Person.from_population(self.population, self.exchange)
 
@@ -49,26 +49,49 @@ class PersonInitializationTest(BasePersonTest):
 
         self.assertEquals(initial_person.exchange, self.exchange)
 
-    def test_copy_copies_population(self):
+    def test_copy_initial_copies_population(self):
         person = Person(Mock(), Mock())
 
-        copy_person = person.copy()
+        copy_person = person.copy_initial()
 
         self.assertEquals(copy_person.population, person.population)
 
-    def test_copy_copies_exchange(self):
+    def test_copy_initial_copies_exchange(self):
         person = Person(Mock(), Mock())
 
-        copy_person = person.copy()
+        copy_person = person.copy_initial()
 
         self.assertEquals(copy_person.exchange, person.exchange)
 
-    def test_copy_does_not_copy_inventory(self):
+    def test_copy_initial_does_not_copy_inventory(self):
+        person = Person(Mock(), Mock())
+        person.inventory['SomeResource'] = Mock()
+
+        copy_person = person.copy_initial()
+
+        self.assertNotIn('SomeResource', copy_person.inventory)
+
+    def test_copy_full_copies_exchange(self):
         person = Person(Mock(), Mock())
 
-        copy_person = person.copy()
+        copy_person = person.copy_full()
 
-        self.assertIsNot(person.inventory, copy_person.inventory)
+        self.assertEqual(person.exchange, copy_person.exchange)
+
+    def test_copy_full_copies_population(self):
+        person = Person(Mock(), Mock())
+
+        copy_person = person.copy_full()
+
+        self.assertEqual(person.population, copy_person.population)
+
+    def test_copy_full_copies_inventory(self):
+        person = Person(Mock(), Mock())
+        person.inventory['SomeResource'] = Mock()
+
+        copy_person = person.copy_full()
+
+        self.assertCountEqual(person.inventory, copy_person.inventory)
 
     def test_initial_money(self):
         person = Person(Mock(), Mock())
