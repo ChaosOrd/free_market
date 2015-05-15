@@ -25,7 +25,6 @@ var CustomPopulation = {
 };
 
 $(document).ready(function() {
-    navigation.Init();
     CustomPopulation.Init();
     $('[tabindex=0]').focus();
     $("#add_supply_demand").click( function () {
