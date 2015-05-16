@@ -1,4 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Play summary{% endblock %}
 {% block content %}
+<div id="simulated_universe_id" hidden>{{ universe_id }}</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/simulation/simulation.js"></script>
 {% endblock %}
