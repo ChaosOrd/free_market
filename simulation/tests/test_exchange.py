@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
-from ..exchange import Exchange
+from exchange import Exchange
 
 
 class ExchangeTest(TestCase):

@@ -1,6 +1,6 @@
 import random
-from .exchange import Order
-from .exchange import Exchange
+from exchange import Order
+from exchange import Exchange
 
 
 class Simulator(object):

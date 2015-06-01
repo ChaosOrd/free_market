@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 from unittest.mock import Mock, patch, call
-from simulation.simulator import Simulator
+from simulator import Simulator
 
 
 class SimulatorTest(TestCase):
@@ -14,9 +14,9 @@ class SimulatorTest(TestCase):
         self.calls = []
 
     def init_patchers(self):
-        self.person_patcher = patch('simulation.simulator.Person')
+        self.person_patcher = patch('simulator.Person')
         self.person_cls = self.person_patcher.start()
-        self.exchange_patcher = patch('simulation.simulator.Exchange')
+        self.exchange_patcher = patch('simulator.Exchange')
         self.exchange_cls = self.exchange_patcher.start()
         self.exchange = self.exchange_cls.return_value
 

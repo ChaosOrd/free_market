@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 from unittest.mock import Mock, patch, call
-from simulation.simulator import Person
+from simulator import Person
 
 
 class BasePersonTest(TestCase):
@@ -14,14 +14,14 @@ class BasePersonTest(TestCase):
 
 class PersonInitializationTest(BasePersonTest):
 
-    @patch('simulation.simulator.Person._single_person_from_population')
+    @patch('simulator.Person._single_person_from_population')
     def test_from_population_calls_single_person_from_population(self, single_person_from_population_mock):
         Person.from_population(self.population, self.exchange)
 
         single_person_from_population_mock.assert_called_once_with(
             self.population, self.exchange)
 
-    @patch('simulation.simulator.Person._single_person_from_population')
+    @patch('simulator.Person._single_person_from_population')
     def test_from_population_returns_list_of_copies_from_initial_person(self, single_person_from_population_mock):
 
         Person.copy_initial = Mock()
@@ -114,10 +114,10 @@ class PersonOrderPlacementTest(BasePersonTest):
         self.stop_patchers()
 
     def start_patchers(self):
-        self.order_patcher = patch('simulation.simulator.Order')
+        self.order_patcher = patch('simulator.Order')
         self.order_cls = self.order_patcher.start()
         self.order = self.order_cls.return_value
-        self.random_patcher = patch('simulation.simulator.random')
+        self.random_patcher = patch('simulator.random')
         self.random = self.random_patcher.start()
 
     def stop_patchers(self):
