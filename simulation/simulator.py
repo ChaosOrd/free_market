@@ -72,7 +72,7 @@ class Person(object):
         return persons
 
     @classmethod
-    def _single_person_from_population(self, population, exchange):
+    def _single_person_from_population(cls, population, exchange):
         return Person(population=population, exchange=exchange)
 
     def copy_initial(self) -> "Person":
@@ -89,7 +89,7 @@ class Person(object):
             self.exchange.place_order(order)
 
     def _create_order_to_handle_supply_demand(self, supply_demand):
-        if (supply_demand.value < 0):
+        if supply_demand.value < 0:
             order = self._create_buy_order(supply_demand)
         else:
             order = self._create_sell_order(supply_demand)

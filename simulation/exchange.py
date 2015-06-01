@@ -49,7 +49,7 @@ class Exchange(object):
         return min(abs(first_order.quantity), abs(second_order.quantity))
 
     def __calc_crossing_entries_price(self, first_entry, second_entry):
-        if (first_entry.sequence < second_entry.sequence):
+        if first_entry.sequence < second_entry.sequence:
             return first_entry.order.price
         else:
             return second_entry.order.price

@@ -639,7 +639,7 @@ function begin() {
 function resumeProcessing() {
 	runStarted = true;
 
-	// A slight delay to allow this iteration of the event loop to finish (more assertions, etc.)
+	// A slight delay to allow this iteration of the utils loop to finish (more assertions, etc.)
 	if ( defined.setTimeout ) {
 		setTimeout(function() {
 			if ( config.current && config.current.semaphore > 0 ) {
@@ -842,7 +842,7 @@ Test.prototype = {
 
 				// They could be equal (both undefined) but if the previousModule property doesn't
 				// yet exist it means this is the first test in a suite that isn't wrapped in a
-				// module, in which case we'll just emit a moduleStart event for 'undefined'.
+				// module, in which case we'll just emit a moduleStart utils for 'undefined'.
 				// Without this, reporters can get testStart before moduleStart  which is a problem.
 				!hasOwn.call( config, "previousModule" )
 		) {

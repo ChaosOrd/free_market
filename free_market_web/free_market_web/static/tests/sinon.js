@@ -4010,7 +4010,7 @@ if (typeof sinon == "undefined") {
 /**
  * @depend core.js
  * @depend ../extend.js
- * @depend event.js
+ * @depend utils.js
  * @depend ../log_error.js
  */
 /**
@@ -4601,7 +4601,7 @@ if (typeof sinon == "undefined") {
 
     function loadDependencies(require, exports, module) {
         var sinon = require("./core");
-        require("./event");
+        require("./utils");
         makeApi(sinon);
         module.exports = sinon;
     }
@@ -5531,7 +5531,7 @@ if (typeof sinon == "undefined") {
 /**
  * @depend core.js
  * @depend ../extend.js
- * @depend event.js
+ * @depend utils.js
  * @depend ../log_error.js
  */
 /**
@@ -5613,7 +5613,7 @@ if (typeof sinon == "undefined") {
                     break;
                 case FakeXDomainRequest.LOADING:
                     if (this.sendFlag) {
-                        //raise the progress event
+                        //raise the progress utils
                         eventName = "onprogress";
                     }
                     break;
@@ -5628,7 +5628,7 @@ if (typeof sinon == "undefined") {
                     break;
                 }
 
-                // raising event (if defined)
+                // raising utils (if defined)
                 if (eventName) {
                     if (typeof this[eventName] == "function") {
                         try {
@@ -5735,7 +5735,7 @@ if (typeof sinon == "undefined") {
 
     function loadDependencies(require, exports, module) {
         var sinon = require("./core");
-        require("./event");
+        require("./utils");
         makeApi(sinon);
         module.exports = sinon;
     }
