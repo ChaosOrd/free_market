@@ -38,7 +38,13 @@ def simulation_result(request, universe_id):
     universe = Universe.objects.get(universe_id)
     return simulate(universe)
 
+
 class BaseUniverseView(View):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.universe_form = None
+        self.pop_form = None
 
     def save_forms_data(self, request):
         if self.universe_form.is_valid() and self.pop_form.is_valid():

@@ -53,7 +53,7 @@ class UniversePlayingTest(FunctionalTest, AuthenticationTestMixin):
         self.browser.find_element_by_link_text('My universes').click()
         self.browser.find_element_by_link_text('Simple universe').click()
 
-        # He clics a play button
+        # He clicks a play button
         self.browser.find_element_by_link_text("Play").click()
         body = self.get_body_text()
 
