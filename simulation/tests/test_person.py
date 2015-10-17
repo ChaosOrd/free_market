@@ -189,6 +189,15 @@ class PersonOrderPlacementTest(BasePersonTest):
                                price=240, quantity=-0.5)]
         self.order_cls.assert_has_calls(expected_calls, any_order=True)
 
+    def test_on_iteration_does_not_create_buy_orders_if_there_is_no_supply(self):
+        self.population.supplies_demands = [self.water_demand, self.tools_demand]
+        person = Person(self.population, self.exchange)
+        self.exchange.get_best_sell.return_value = None
+
+        person.on_iteration()
+
+        self.assertFalse(self.order_cls.called)
+
     def test_on_iteration_creates_sell_orders_for_each_supply(self):
         self.population.supplies_demands = [self.grain_supply, self.potatoes_supply]
         person = Person(self.population, self.exchange)
@@ -221,6 +230,15 @@ class PersonOrderPlacementTest(BasePersonTest):
         expected_calls = [call(self.order_cls.return_value),
                           call(self.order_cls.return_value)]
         self.exchange.place_order.assert_has_calls(expected_calls)
+
+    def test_on_iteration_does_not_place_order_if_not_created(self):
+        self.population.supplies_demands = [self.water_demand]
+        person = Person(self.population, self.exchange)
+        self.exchange.get_best_sell.return_value = None
+
+        person.on_iteration()
+
+        self.assertFalse(self.exchange.place_order.called)
 
     def test_on_order_filled_reduces_money_when_buying(self):
         person = Person(Mock(), Mock())

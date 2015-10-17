@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
-"http://www.w3.org/TR/REC-html40/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 <html lang='en'>
   <head>
     <title>{% block title %}{% endblock %}</title>
@@ -8,5 +7,6 @@
     {% include "header.html" %}
     {% block content %}{% endblock %}
   </body>
+  <script src="http://code.jquery.com/jquery.min.js"></script>
   {% block scripts %}{% endblock %}
 </html>

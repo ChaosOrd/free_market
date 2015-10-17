@@ -1,8 +1,12 @@
 from population.models import Population, SupplyDemand
+from simulation.simulator import Simulator
 
 
 def simulate(universe):
-    return SimUniverse.from_universe(universe)
+    simulator = Simulator()
+    sim_universe = SimUniverse.from_universe(universe)
+    simulation = simulator.simulate(sim_universe)
+    return simulation
 
 
 class SimUniverse(object):
@@ -17,7 +21,7 @@ class SimUniverse(object):
     @classmethod
     def from_universe(cls, universe):
         sim_populations = []
-        populations = Population.filter(universe=universe)
+        populations = Population.objects.filter(universe=universe)
         for pop in populations:
             sim_populations.append(SimPopulation.from_population(pop))
 
@@ -44,7 +48,7 @@ class SimPopulation(object):
 
     @classmethod
     def from_population(cls, population):
-        pop_supplies_demands = SupplyDemand.filter(population=population)
+        pop_supplies_demands = SupplyDemand.objects.filter(population=population)
         sim_supply_demands = []
 
         for pop_sd in pop_supplies_demands:
@@ -53,6 +57,7 @@ class SimPopulation(object):
 
         return SimPopulation(population.name, population.quantity,
                              sim_supply_demands)
+
 
 class SimSupplyDemand(object):
 

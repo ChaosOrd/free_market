@@ -1,8 +1,9 @@
 $(document).ready(function() {
-    $.agax({
-        url: '/population/simulation_result/' + $('#simulated_universe_id').val(),
+    $.ajax({
+        url: '/population/simulation_result/' + $('#simulated_universe_id').text() + "/",
         type: 'get',
-        success: function(data) {
+        success: function (data) {
             var sim_result = data;
-        };
+        }
+    });
 });

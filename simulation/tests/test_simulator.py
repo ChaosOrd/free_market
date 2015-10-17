@@ -31,8 +31,14 @@ class SimulatorTest(TestCase):
         self.person1 = Mock()
         self.person2 = Mock()
         self.person3 = Mock()
-        self.person_cls.from_population.side_effect = \
-            [self.person1, self.person2, self.person3]
+
+        def side_effect(*args):
+            if args[0] == self.pop1:
+                return [self.person1]
+            if args[0] == self.pop2:
+                return [self.person2, self.person3]
+
+        self.person_cls.from_population.side_effect = side_effect
 
     def add_call(self, method_name):
         self.calls.append(method_name)

@@ -1,8 +1,8 @@
+from enum import Enum
 from math import copysign
 
 
 class Exchange(object):
-
     def __init__(self):
         self.__book = []
         self.__order_sequence_number = 0
@@ -14,16 +14,46 @@ class Exchange(object):
         self.__sort_book()
         self.__fill_orders_if_needed()
 
+    def get_best_sell(self):
+        def comparison_criteria(order1, order2):
+            return order1.price < order2.price
+
+        def filtering_criteria(order):
+            return order.side == OrderSide.Sell
+
+        return self.__find_order(filtering_criteria, comparison_criteria)
+
+    def get_best_buy(self):
+        def comparison_criteria(order1, order2):
+            return order1.price > order2.price
+
+        def filtering_criteria(order):
+            return order.side == OrderSide.Buy
+
+        return self.__find_order(filtering_criteria, comparison_criteria)
+
+    def __find_order(self, filtering_criteria, comparison_criteria):
+        max_comparison_order = None
+        for book_entry in self.__book:
+            order = book_entry.order
+
+            if filtering_criteria(order):
+                if max_comparison_order is None or comparison_criteria(order, max_comparison_order):
+                    max_comparison_order = order
+
+        return max_comparison_order
+
     def __sort_book(self):
         def get_order_entry_key(order_entry):
             order = order_entry.order
             return copysign(order.price, order.quantity)
+
         self.__book = sorted(self.__book, key=get_order_entry_key)
 
     def __fill_orders_if_needed(self):
-        for idx in range(len(self.__book)-1):
+        for idx in range(len(self.__book) - 1):
             self.__fill_orders_if_crossing(self.__book[idx],
-                                           self.__book[idx+1])
+                                           self.__book[idx + 1])
 
     def __fill_orders_if_crossing(self, first_entry, second_entry):
         first_order = first_entry.order
@@ -56,7 +86,6 @@ class Exchange(object):
 
 
 class BookEntry(object):
-
     def __init__(self, sequence, order):
         self.__sequence = sequence
         self.__order = order
@@ -71,7 +100,6 @@ class BookEntry(object):
 
 
 class Order(object):
-
     def __init__(self, sender, resource, price, quantity):
         self._resource = resource
         self._price = price
@@ -93,3 +121,18 @@ class Order(object):
     @property
     def sender(self):
         return self._sender
+
+    @property
+    def side(self):
+        if self.quantity > 0:
+            return OrderSide.Buy
+
+        if self.quantity < 0:
+            return OrderSide.Sell
+
+        return None
+
+
+class OrderSide(Enum):
+    Buy = 0
+    Sell = 1

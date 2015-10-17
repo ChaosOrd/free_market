@@ -28,11 +28,12 @@ class Simulator(object):
     def _fill_persons_from_population(self, pop, exchange):
         for person_idx in range(pop.quantity):
             person = Person.from_population(pop, exchange)
-            self._persons.append(person)
+            self._persons.extend(person)
 
     def _run_iterations(self):
         for iteration in range(self.NUM_OF_ITERATIONS):
             self._simulate_iteration()
+            print('Siumlated {} iterations'.format(iteration))
 
     def _simulate_iteration(self):
         snapshot = []
@@ -86,7 +87,9 @@ class Person(object):
     def on_iteration(self):
         for supply_demand in self.population.supplies_demands:
             order = self._create_order_to_handle_supply_demand(supply_demand)
-            self.exchange.place_order(order)
+
+            if order is not None:
+                self.exchange.place_order(order)
 
     def _create_order_to_handle_supply_demand(self, supply_demand):
         if supply_demand.value < 0:
@@ -104,6 +107,10 @@ class Person(object):
 
     def _create_buy_order(self, demand):
         best_sell = self.exchange.get_best_sell()
+
+        if best_sell is None:
+            return None
+
         order = Order(sender=self, resource=demand.resource,
                       price=best_sell.price,
                       quantity=demand.value)

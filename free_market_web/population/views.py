@@ -35,8 +35,9 @@ def play_universe(request, universe_id):
 
 
 def simulation_result(request, universe_id):
-    universe = Universe.objects.get(universe_id)
-    return simulate(universe)
+    universe = Universe.objects.get(id=int(universe_id))
+    simulation = simulate(universe)
+    return simulation
 
 
 class BaseUniverseView(View):
