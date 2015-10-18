@@ -43,6 +43,7 @@ class Simulator(object):
         self.snapshots.append(snapshot)
 
 
+
 class Person(object):
     MIN_RANDOM_PRICE = 100
     MAX_RANDOM_PRICE = 200
