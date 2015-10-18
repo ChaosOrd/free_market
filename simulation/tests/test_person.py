@@ -244,7 +244,7 @@ class PersonOrderPlacementTest(BasePersonTest):
         person = Person(Mock(), Mock())
         person.money = 100
 
-        person.on_order_filled(self.order, 7, -10)
+        person.on_order_filled(self.order, 7, 10)
 
         self.assertEqual(person.money, 30)
 
@@ -252,7 +252,7 @@ class PersonOrderPlacementTest(BasePersonTest):
         person = Person(Mock(), Mock())
         person.money = 100
 
-        person.on_order_filled(self.order, 8, 6)
+        person.on_order_filled(self.order, 8, -6)
 
         self.assertEqual(person.money, 148)
 
@@ -260,7 +260,7 @@ class PersonOrderPlacementTest(BasePersonTest):
         resource = self.order.resource
         person = Person(Mock(), Mock())
 
-        person.on_order_filled(self.order, 6, -5)
+        person.on_order_filled(self.order, 6, 5)
 
         self.assertEqual(person.inventory[resource], 5)
 
@@ -269,7 +269,7 @@ class PersonOrderPlacementTest(BasePersonTest):
         person = Person(Mock(), Mock())
         person.inventory[resource] = 10
 
-        person.on_order_filled(self.order, 6, -5)
+        person.on_order_filled(self.order, 6, 5)
 
         self.assertEquals(person.inventory[resource], 15)
 
@@ -278,7 +278,7 @@ class PersonOrderPlacementTest(BasePersonTest):
         person = Person(Mock(), Mock())
         person.inventory[resource] = 6
 
-        person.on_order_filled(self.order, 6, 5)
+        person.on_order_filled(self.order, 6, -5)
 
         self.assertEqual(person.inventory[resource], 1)
 
@@ -287,7 +287,7 @@ class PersonOrderPlacementTest(BasePersonTest):
         person = Person(Mock(), Mock())
         person.inventory[resource] = 7
 
-        person.on_order_filled(self.order, 6, 7)
+        person.on_order_filled(self.order, 6, -7)
 
         self.assertNotIn(resource, person.inventory)
 

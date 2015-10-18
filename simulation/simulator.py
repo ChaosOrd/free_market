@@ -117,9 +117,9 @@ class Person(object):
         return order
 
     def on_order_filled(self, order, price, quantity):
-        self.money += price * quantity
+        self.money -= price * quantity
         resource = order.resource
-        self._add_resource_quantity(resource, -quantity)
+        self._add_resource_quantity(resource, quantity)
 
     def _add_resource_quantity(self, resource, quantity):
         if resource in self.inventory:

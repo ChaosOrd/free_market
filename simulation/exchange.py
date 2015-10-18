@@ -14,6 +14,11 @@ class Exchange(object):
         self.__sort_book()
         self.__fill_orders_if_needed()
 
+        for order_entry in self.__book:
+            order = order_entry.order
+            if order.quantity == 0:
+                self.__book.remove(order_entry)
+
     def get_best_sell(self):
         def comparison_criteria(order1, order2):
             return order1.price < order2.price
@@ -31,6 +36,10 @@ class Exchange(object):
             return order.side == OrderSide.Buy
 
         return self.__find_order(filtering_criteria, comparison_criteria)
+
+    @property
+    def book_size(self):
+        return len(self.__book)
 
     def __find_order(self, filtering_criteria, comparison_criteria):
         max_comparison_order = None
@@ -58,7 +67,7 @@ class Exchange(object):
     def __fill_orders_if_crossing(self, first_entry, second_entry):
         first_order = first_entry.order
         second_order = second_entry.order
-        if first_order.price >= second_order.price:
+        if first_order.side != second_order.side and first_order.price <= second_order.price:
             self.__fill_orders(first_entry, second_entry)
 
     def __fill_orders(self, first_entry, second_entry):
@@ -68,12 +77,14 @@ class Exchange(object):
         price = self.__calc_crossing_entries_price(first_entry, second_entry)
         abs_quantity = self.__calc_crossing_orders_absolute_qty(first_order,
                                                                 second_order)
-        first_order.sender.on_order_filled(
-            order=first_order, price=price,
-            quantity=copysign(abs_quantity, first_order.quantity))
-        second_order.sender.on_order_filled(
-            order=second_order, price=price,
-            quantity=copysign(abs_quantity, second_order.quantity))
+
+        first_order_quantity = copysign(abs_quantity, first_order.quantity)
+        first_order.sender.on_order_filled(order=first_order, price=price, quantity=first_order_quantity)
+        first_order.quantity -= first_order_quantity
+
+        second_order_quantity = copysign(abs_quantity, second_order.quantity)
+        second_order.sender.on_order_filled(order=second_order, price=price, quantity=second_order_quantity)
+        second_order.quantity -= second_order_quantity
 
     def __calc_crossing_orders_absolute_qty(self, first_order, second_order):
         return min(abs(first_order.quantity), abs(second_order.quantity))
@@ -97,6 +108,9 @@ class BookEntry(object):
     @property
     def order(self):
         return self.__order
+
+    def __repr__(self):
+        return "Sequence: {}, Order: {}".format(self.sequence, self.order)
 
 
 class Order(object):
