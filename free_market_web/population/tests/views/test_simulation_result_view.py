@@ -16,7 +16,7 @@ class TestSimulationResultView(BaseUniverseTestCase):
     def test_retrieves_universe_by_id(self):
         simulation_result(self.request, 0)
 
-        self.universe_cls.objects.get.assert_called_once_with(0)
+        self.universe_cls.objects.get.assert_called_once_with(id=0)
 
     def test_calls_api_simulate(self):
         simulation_result(self.request, 0)
