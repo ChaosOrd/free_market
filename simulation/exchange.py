@@ -2,13 +2,42 @@ from enum import Enum
 from math import copysign
 
 
+class Order(object):
+    def __init__(self, resource, price, quantity):
+        self._resource = resource
+        self._price = price
+        self._quantity = quantity
+
+    @property
+    def resource(self):
+        return self._resource
+
+    @property
+    def price(self):
+        return self._price
+
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @property
+    def side(self):
+        if self.quantity > 0:
+            return OrderSide.Buy
+
+        if self.quantity < 0:
+            return OrderSide.Sell
+
+        return None
+
+
 class Exchange(object):
     def __init__(self):
         self.__book = []
         self.__order_sequence_number = 0
 
-    def place_order(self, order):
-        self.__book.append(BookEntry(self.__order_sequence_number, order))
+    def place_order(self, order, sender):
+        self.__book.append(BookEntry(self.__order_sequence_number, order, sender))
         self.__order_sequence_number += 1
 
         self.__sort_book()
@@ -19,7 +48,7 @@ class Exchange(object):
             if order.quantity == 0:
                 self.__book.remove(order_entry)
 
-    def get_best_sell(self):
+    def get_best_sell(self) -> Order:
         def comparison_criteria(order1, order2):
             return order1.price < order2.price
 
@@ -79,17 +108,19 @@ class Exchange(object):
                                                                 second_order)
 
         first_order_quantity = copysign(abs_quantity, first_order.quantity)
-        first_order.sender.on_order_filled(order=first_order, price=price, quantity=first_order_quantity)
+        first_entry.sender.on_order_filled(order=first_order, price=price, quantity=first_order_quantity)
         first_order.quantity -= first_order_quantity
 
         second_order_quantity = copysign(abs_quantity, second_order.quantity)
-        second_order.sender.on_order_filled(order=second_order, price=price, quantity=second_order_quantity)
+        second_entry.sender.on_order_filled(order=second_order, price=price, quantity=second_order_quantity)
         second_order.quantity -= second_order_quantity
 
-    def __calc_crossing_orders_absolute_qty(self, first_order, second_order):
+    @staticmethod
+    def __calc_crossing_orders_absolute_qty(first_order, second_order):
         return min(abs(first_order.quantity), abs(second_order.quantity))
 
-    def __calc_crossing_entries_price(self, first_entry, second_entry):
+    @staticmethod
+    def __calc_crossing_entries_price(first_entry, second_entry):
         if first_entry.sequence < second_entry.sequence:
             return first_entry.order.price
         else:
@@ -97,9 +128,10 @@ class Exchange(object):
 
 
 class BookEntry(object):
-    def __init__(self, sequence, order):
+    def __init__(self, sequence, order, sender):
         self.__sequence = sequence
         self.__order = order
+        self.__sender = sender
 
     @property
     def sequence(self):
@@ -109,42 +141,12 @@ class BookEntry(object):
     def order(self):
         return self.__order
 
-    def __repr__(self):
-        return "Sequence: {}, Order: {}".format(self.sequence, self.order)
-
-
-class Order(object):
-    def __init__(self, sender, resource, price, quantity):
-        self._resource = resource
-        self._price = price
-        self._quantity = quantity
-        self._sender = sender
-
-    @property
-    def resource(self):
-        return self._resource
-
-    @property
-    def price(self):
-        return self._price
-
-    @property
-    def quantity(self):
-        return self._quantity
-
     @property
     def sender(self):
-        return self._sender
+        return self.__sender
 
-    @property
-    def side(self):
-        if self.quantity > 0:
-            return OrderSide.Buy
-
-        if self.quantity < 0:
-            return OrderSide.Sell
-
-        return None
+    def __repr__(self):
+        return "Sequence: {}, Order: {}".format(self.sequence, self.order)
 
 
 class OrderSide(Enum):

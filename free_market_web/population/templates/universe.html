@@ -2,25 +2,25 @@
 {% block title %}Universe{% endblock %}
 {% block form_action %}{% url 'universe' universe_form.instance.id %}{% endblock %}
 {% block universe_content %}
-  {% for pop in universe_form.instance.population_set.all %}
-  <ul>
-    <li>
-      {{ pop.name }} X {{ pop.quantity }}
-    </li>
-    <li>
-      <div>Supply and demand</div>
-      <div>
-        <ul>
-          {% for sd in pop.supplydemand_set.all %}
-            <li>{{ sd.resource.name }}: {{ sd.value }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </li>
-    <li>
-      <a href='{% url 'delete_population' pop.id %}'>Delete</a>
-    </li>
-  </ul>
-  <a href="{% url 'play_universe' universe_form.instance.id  %}">Play</a>
-  {% endfor %}
+      {% for pop in universe_form.instance.population_set.all %}
+          <ul>
+              <li>
+              {{ pop.name }} X {{ pop.quantity }}
+              </li>
+              <li>
+              <div>Supply and demand</div>
+              <div>
+                  <ul>
+                      {% for sd in pop.supplydemand_set.all %}
+                          <li>{{ sd.resource.name }}: {{ sd.value }}</li>
+                      {% endfor %}
+                  </ul>
+              </div>
+              </li>
+              <li>
+                  <a href='{% url 'delete_population' pop.id %}'>Delete</a>
+              </li>
+          </ul>
+      {% endfor %}
+      <a href="{% url 'play_universe' universe_form.instance.id  %}">Play</a>
 {% endblock %}

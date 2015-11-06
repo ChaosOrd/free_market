@@ -1,6 +1,8 @@
 import random
+from api.simulator_api import Population
 from exchange import Order
 from exchange import Exchange
+from strategies import SimpleStrategy, BaseStrategy
 
 
 class Simulator(object):
@@ -33,7 +35,7 @@ class Simulator(object):
     def _run_iterations(self):
         for iteration in range(self.NUM_OF_ITERATIONS):
             self._simulate_iteration()
-            print('Siumlated {} iterations'.format(iteration))
+            print('Simulated {} iterations'.format(iteration))
 
     def _simulate_iteration(self):
         snapshot = []
@@ -49,8 +51,9 @@ class Person(object):
     INITIAL_MONEY = 1000
     MONEY_RESOURCE_NAME = 'Money'
 
-    def __init__(self, population, exchange):
+    def __init__(self, population: Population, exchange: Exchange, strategy: BaseStrategy):
         self.population = population
+        self.strategy = strategy
         self.exchange = exchange
         self.inventory = {self.MONEY_RESOURCE_NAME: self.INITIAL_MONEY}
 
@@ -74,10 +77,11 @@ class Person(object):
 
     @classmethod
     def _single_person_from_population(cls, population, exchange):
-        return Person(population=population, exchange=exchange)
+        simple_strategy = SimpleStrategy(exchange)
+        return Person(population=population, exchange=exchange, strategy=simple_strategy)
 
     def copy_initial(self) -> "Person":
-        return Person(self.population, self.exchange)
+        return Person(self.population, self.exchange, self.strategy)
 
     def copy_full(self):
         person = self.copy_initial()
@@ -85,36 +89,9 @@ class Person(object):
         return person
 
     def on_iteration(self):
-        for supply_demand in self.population.supplies_demands:
-            order = self._create_order_to_handle_supply_demand(supply_demand)
-
-            if order is not None:
-                self.exchange.place_order(order)
-
-    def _create_order_to_handle_supply_demand(self, supply_demand):
-        if supply_demand.value < 0:
-            order = self._create_buy_order(supply_demand)
-        else:
-            order = self._create_sell_order(supply_demand)
-        return order
-
-    def _create_sell_order(self, supply):
-        order = Order(sender=self, resource=supply.resource,
-                      price=random.randint(self.MIN_RANDOM_PRICE,
-                                           self.MAX_RANDOM_PRICE),
-                      quantity=supply.value)
-        return order
-
-    def _create_buy_order(self, demand):
-        best_sell = self.exchange.get_best_sell()
-
-        if best_sell is None:
-            return None
-
-        order = Order(sender=self, resource=demand.resource,
-                      price=best_sell.price,
-                      quantity=demand.value)
-        return order
+        orders_to_place = self.strategy.make_move(self.population.supplies_demands, self.inventory)
+        for order in orders_to_place:
+            self.exchange.place_order(order, self)
 
     def on_order_filled(self, order, price, quantity):
         self.money -= price * quantity

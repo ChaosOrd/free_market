@@ -7,9 +7,9 @@ class ExchangeTest(TestCase):
 
     def setUp(self):
         self.buy_order = MagicMock()
-        self.buy_sender = self.buy_order.sender
+        self.buy_sender = MagicMock()
         self.sell_order = MagicMock()
-        self.sell_sender = self.sell_order.sender
+        self.sell_sender = MagicMock()
         self.buy_order.price = 10
         self.buy_order.quantity = 5
         self.buy_order.side = OrderSide.Buy
@@ -29,8 +29,8 @@ class ExchangeTest(TestCase):
     def test_orders_with_same_prices_result_in_fill(self):
         exchange = Exchange()
 
-        exchange.place_order(self.buy_order)
-        exchange.place_order(self.sell_order)
+        exchange.place_order(self.buy_order, self.buy_sender)
+        exchange.place_order(self.sell_order, self.sell_sender)
 
         self.buy_sender.on_order_filled.assert_called_once_with(
             order=self.buy_order, price=10, quantity=5)
@@ -41,8 +41,8 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         self.sell_order.price = 11
 
-        exchange.place_order(self.buy_order)
-        exchange.place_order(self.sell_order)
+        exchange.place_order(self.buy_order, self.buy_sender)
+        exchange.place_order(self.sell_order, self.sell_sender)
 
         self.assertFalse(self.buy_sender.on_order_filled.called)
         self.assertFalse(self.sell_sender.on_order_filled.called)
@@ -51,8 +51,8 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         another_sell_order = self._create_order_mock(11, -5, OrderSide.Sell)
 
-        exchange.place_order(self.sell_order)
-        exchange.place_order(another_sell_order)
+        exchange.place_order(self.sell_order, self.sell_sender)
+        exchange.place_order(another_sell_order, MagicMock())
 
         self.assertFalse(self.buy_sender.on_order_filled.called)
         self.assertFalse(another_sell_order.on_order_filled.called)
@@ -61,8 +61,8 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         self.sell_order.price = 9.5
 
-        exchange.place_order(self.sell_order)
-        exchange.place_order(self.buy_order)
+        exchange.place_order(self.sell_order, self.sell_sender)
+        exchange.place_order(self.buy_order, self.buy_sender)
 
         self.buy_sender.on_order_filled.assert_called_once_with(
             order=self.buy_order, price=9.5, quantity=5)
@@ -73,8 +73,8 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         self.sell_order.price = 9.5
 
-        exchange.place_order(self.buy_order)
-        exchange.place_order(self.sell_order)
+        exchange.place_order(self.buy_order, self.buy_sender)
+        exchange.place_order(self.sell_order, self.sell_sender)
 
         self.buy_sender.on_order_filled.assert_called_once_with(
             order=self.buy_order, price=10, quantity=5)
@@ -85,8 +85,8 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         self.sell_order.quantity = -3
 
-        exchange.place_order(self.buy_order)
-        exchange.place_order(self.sell_order)
+        exchange.place_order(self.buy_order, self.buy_sender)
+        exchange.place_order(self.sell_order, self.sell_sender)
 
         self.buy_sender.on_order_filled.assert_called_once_with(
             order=self.buy_order, price=10, quantity=3)
@@ -98,8 +98,8 @@ class ExchangeTest(TestCase):
         self.sell_order.quantity = -3
         self.buy_order.quantity = 4
 
-        exchange.place_order(self.buy_order)
-        exchange.place_order(self.sell_order)
+        exchange.place_order(self.buy_order, self.buy_sender)
+        exchange.place_order(self.sell_order, self.sell_sender)
 
         self.assertEquals(self.buy_order.quantity, 1)
         self.assertEquals(self.sell_order.quantity, 0)
@@ -109,8 +109,8 @@ class ExchangeTest(TestCase):
         self.sell_order.quantity = -3
         self.buy_order.quantity = 4
 
-        exchange.place_order(self.buy_order)
-        exchange.place_order(self.sell_order)
+        exchange.place_order(self.buy_order, self.buy_sender)
+        exchange.place_order(self.sell_order, self.sell_sender)
 
         self.assertEqual(exchange.book_size, 1)
 
@@ -118,7 +118,7 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         order = self._create_order_mock(10, -5, OrderSide.Sell)
 
-        exchange.place_order(order)
+        exchange.place_order(order, self.sell_sender)
         self.assertEqual(exchange.get_best_sell(), order)
 
     def test_get_best_sell_returns_sell_order_with_lowest_price_when_there_are_only_sell_orders(self):
@@ -126,8 +126,8 @@ class ExchangeTest(TestCase):
         first_order = self._create_order_mock(10, -5, OrderSide.Sell)
         second_order = self._create_order_mock(9.8, -3, OrderSide.Sell)
 
-        exchange.place_order(first_order)
-        exchange.place_order(second_order)
+        exchange.place_order(first_order, MagicMock())
+        exchange.place_order(second_order, MagicMock())
 
         self.assertEqual(exchange.get_best_sell(), second_order)
 
@@ -137,9 +137,9 @@ class ExchangeTest(TestCase):
         second_order = self._create_order_mock(9.8, -3, OrderSide.Sell)
         buy_order = self._create_order_mock(9.4, 6, OrderSide.Buy)
 
-        exchange.place_order(first_order)
-        exchange.place_order(second_order)
-        exchange.place_order(buy_order)
+        exchange.place_order(first_order, MagicMock())
+        exchange.place_order(second_order, MagicMock())
+        exchange.place_order(buy_order, MagicMock())
 
         self.assertEqual(exchange.get_best_sell(), second_order)
 
@@ -147,7 +147,7 @@ class ExchangeTest(TestCase):
         exchange = Exchange()
         order = self._create_order_mock(10, 4, OrderSide.Buy)
 
-        exchange.place_order(order)
+        exchange.place_order(order, MagicMock())
 
         self.assertEquals(exchange.get_best_buy(), order)
 
@@ -156,8 +156,8 @@ class ExchangeTest(TestCase):
         first_buy_order = self._create_order_mock(10, 4, OrderSide.Buy)
         second_buy_order = self._create_order_mock(10.5, 3, OrderSide.Buy)
 
-        exchange.place_order(first_buy_order)
-        exchange.place_order(second_buy_order)
+        exchange.place_order(first_buy_order, MagicMock())
+        exchange.place_order(second_buy_order, MagicMock())
 
         self.assertEquals(exchange.get_best_buy(), second_buy_order)
 
@@ -167,18 +167,18 @@ class ExchangeTest(TestCase):
         second_buy_order = self._create_order_mock(10.5, 3, OrderSide.Buy)
         sell_order = self._create_order_mock(11.6, -4, OrderSide.Sell)
 
-        exchange.place_order(first_buy_order)
-        exchange.place_order(second_buy_order)
-        exchange.place_order(sell_order)
+        exchange.place_order(first_buy_order, MagicMock())
+        exchange.place_order(second_buy_order, MagicMock())
+        exchange.place_order(sell_order, MagicMock())
 
         self.assertEquals(exchange.get_best_buy(), second_buy_order)
 
-    def test_book_size_returs_the_number_of_placed_orders(self):
+    def test_book_size_returns_the_number_of_placed_orders(self):
         exchange = Exchange()
         first_buy_order = self._create_order_mock(10, 4, OrderSide.Buy)
         second_buy_order = self._create_order_mock(10.5, 3, OrderSide.Buy)
 
-        exchange.place_order(first_buy_order)
-        exchange.place_order(second_buy_order)
+        exchange.place_order(first_buy_order, MagicMock())
+        exchange.place_order(second_buy_order, MagicMock())
 
         self.assertEquals(exchange.book_size, 2)
