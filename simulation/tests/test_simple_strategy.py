@@ -11,6 +11,7 @@ class TestSimpleStrategy(TestCase):
     def setUp(self):
         self.population = MagicMock()
         self.exchange = MagicMock()
+        self.person = MagicMock()
         self.start_patchers()
         self.create_resources()
         self.create_supplies()
@@ -160,3 +161,12 @@ class TestSimpleStrategy(TestCase):
         orders = strategy.make_move(supplies_demands, inventory)
 
         self.assertEqual(orders, [first_order, second_order])
+
+    def test_does_not_return_orders_if_orders_were_already_placed(self):
+        supplies_demands = [self.grain_supply, self.potatoes_supply]
+        inventory = {}
+        self.exchange.get_orders_sent_by.return_value = [MagicMock()]
+        strategy = SimpleStrategy(self.exchange)
+
+        orders = strategy.make_move(supplies_demands, inventory, working_orders=[MagicMock()])
+        self.assertEquals(orders, [])

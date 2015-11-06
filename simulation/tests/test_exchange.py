@@ -182,3 +182,19 @@ class ExchangeTest(TestCase):
         exchange.place_order(second_buy_order, MagicMock())
 
         self.assertEquals(exchange.book_size, 2)
+
+    def test_get_orders_sent_by_returns_orders_of_specified_sender(self):
+        exchange = Exchange()
+        first_sender_order = self._create_order_mock(10, 4, OrderSide.Buy)
+        first_sender = MagicMock()
+        second_sender_order = self._create_order_mock(10.5, 3, OrderSide.Buy)
+        second_sender = MagicMock()
+        another_second_sender_order = self._create_order_mock(10.7, 1, OrderSide.Buy)
+
+        exchange.place_order(first_sender_order, first_sender)
+        exchange.place_order(second_sender_order, second_sender)
+        exchange.place_order(another_second_sender_order, first_sender)
+
+        expected_orders = {first_sender_order, another_second_sender_order}
+        actual_orders = set(exchange.get_orders_sent_by(first_sender))
+        self.assertEqual(actual_orders, expected_orders)

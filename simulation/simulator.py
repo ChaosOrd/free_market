@@ -1,6 +1,4 @@
-import random
-from api.simulator_api import Population
-from exchange import Order
+from api.simulator_api import PopulationBase
 from exchange import Exchange
 from strategies import SimpleStrategy, BaseStrategy
 
@@ -44,6 +42,9 @@ class Simulator(object):
             snapshot.append(person.copy_full())
         self.snapshots.append(snapshot)
 
+    def get_snapshots_dictionary(self):
+        raise NotImplementedError()
+
 
 class Person(object):
     MIN_RANDOM_PRICE = 100
@@ -51,7 +52,7 @@ class Person(object):
     INITIAL_MONEY = 1000
     MONEY_RESOURCE_NAME = 'Money'
 
-    def __init__(self, population: Population, exchange: Exchange, strategy: BaseStrategy):
+    def __init__(self, population: PopulationBase, exchange: Exchange, strategy: BaseStrategy):
         self.population = population
         self.strategy = strategy
         self.exchange = exchange
@@ -89,7 +90,8 @@ class Person(object):
         return person
 
     def on_iteration(self):
-        orders_to_place = self.strategy.make_move(self.population.supplies_demands, self.inventory)
+        working_orders = self.exchange.get_orders_sent_by(self)
+        orders_to_place = self.strategy.make_move(self.population.supplies_demands, self.inventory, working_orders)
         for order in orders_to_place:
             self.exchange.place_order(order, self)
 

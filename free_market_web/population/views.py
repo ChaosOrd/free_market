@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View
 from .forms import NewPopulationForm, SupplyDemandForm, UniverseForm
 from population.models import Population, Universe
-from api.simulator_api import simulate
+from api_implementation.simulator_api import simulate
 
 
 def home_page(request):

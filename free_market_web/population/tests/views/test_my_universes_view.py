@@ -1,9 +1,7 @@
-from .base import BaseUniverseTestCase
-from django.test import TestCase
 from unittest.mock import Mock, patch
-from population.views import my_universes_view
+from django.test import TestCase
 from django.http import HttpRequest
-from django.contrib.auth.decorators import login_required
+from population.views import my_universes_view
 
 
 class TestMyUniversesView(TestCase):

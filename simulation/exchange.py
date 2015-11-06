@@ -126,6 +126,9 @@ class Exchange(object):
         else:
             return second_entry.order.price
 
+    def get_orders_sent_by(self, sender):
+        return [order_entry.order for order_entry in self.__book if order_entry.sender == sender]
+
 
 class BookEntry(object):
     def __init__(self, sequence, order, sender):

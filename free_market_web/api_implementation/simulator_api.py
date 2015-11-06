@@ -1,13 +1,23 @@
 from population.models import Population, SupplyDemand
 from simulation.simulator import Simulator
-from simulation.api import simulator_api
+from simulation.api.simulator_api import PopulationBase, SupplyDemandBase
 
 
 def simulate(universe):
     simulator = Simulator()
     sim_universe = SimUniverse.from_universe(universe)
-    simulation = simulator.simulate(sim_universe)
-    return simulation
+    simulator.simulate(sim_universe)
+    return simulator.get_snapshots_dictionary()
+
+
+class SimulatorApi(object):
+
+    @classmethod
+    def simulate(cls, universe):
+        simulator = Simulator()
+        sim_universe = SimUniverse.from_universe(universe)
+        simulator.simulate(sim_universe)
+        return simulator.snapshots
 
 
 class SimUniverse(object):
@@ -29,7 +39,7 @@ class SimUniverse(object):
         return SimUniverse(sim_populations)
 
 
-class SimPopulation(simulator_api.Population):
+class SimPopulation(PopulationBase):
     def __init__(self, name, quantity, supplies_demands):
         self.__name = name
         self.__quantity = quantity
@@ -60,7 +70,7 @@ class SimPopulation(simulator_api.Population):
                              sim_supply_demands)
 
 
-class SimSupplyDemand(simulator_api.SupplyDemand):
+class SimSupplyDemand(SupplyDemandBase):
 
     def __init__(self, resource, value):
         self.__resource = resource

@@ -150,7 +150,10 @@ class PersonOrderPlacementTest(BasePersonTest):
 
         person.on_iteration()
 
-        self.strategy_obj.make_move.assert_called_once_with(person.population.supplies_demands, person.inventory)
+        self.strategy_obj.make_move.assert_called_once_with(person.population.supplies_demands,
+                                                            person.inventory,
+                                                            self.exchange.get_orders_sent_by.return_value)
+        self.exchange.get_orders_sent_by.assert_called_once_with(person)
         expected_calls = [call(first_order, person), call(second_order, person)]
         self.exchange.place_order.assert_has_calls(expected_calls)
 

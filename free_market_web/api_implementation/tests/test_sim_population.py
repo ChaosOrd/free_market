@@ -1,4 +1,4 @@
-from api.simulator_api import SimPopulation
+from api_implementation.simulator_api import SimPopulation
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
@@ -8,7 +8,7 @@ class TestSimPopulation(TestCase):
     def setUp(self):
         self.population = Mock()
 
-        self.supply_demand_patcher = patch('api.simulator_api.SupplyDemand')
+        self.supply_demand_patcher = patch('api_implementation.simulator_api.SupplyDemand')
         self.supply_demand_mock = self.supply_demand_patcher.start()
 
         self.first_sd = Mock()
@@ -17,7 +17,7 @@ class TestSimPopulation(TestCase):
         self.second_sd = Mock()
         self.second_sd.resource.name = 'Wheat'
         self.second_sd.value = 0.3
-        self.supply_demand_mock.filter.return_value = [self.first_sd, self.second_sd]
+        self.supply_demand_mock.objects.filter.return_value = [self.first_sd, self.second_sd]
 
     def tearDown(self):
         self.supply_demand_patcher.stop()
@@ -39,7 +39,7 @@ class TestSimPopulation(TestCase):
     def test_from_population_gets_supplies_demands(self):
         SimPopulation.from_population(self.population)
 
-        self.supply_demand_mock.filter.assert_called_once_with(
+        self.supply_demand_mock.objects.filter.assert_called_once_with(
             population=self.population)
 
     def test_from_population_copies_sd_resource_names(self):

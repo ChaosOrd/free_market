@@ -4,7 +4,7 @@ from typing import Iterable
 __author__ = 'chaosord'
 
 
-class SupplyDemand(object):
+class SupplyDemandBase(object):
 
     @abc.abstractproperty
     def resource(self) -> str:
@@ -15,7 +15,7 @@ class SupplyDemand(object):
         pass
 
 
-class Population(object):
+class PopulationBase(object):
 
     @abc.abstractproperty
     def name(self) -> str:
@@ -26,5 +26,5 @@ class Population(object):
         pass
 
     @abc.abstractproperty
-    def supplies_demands(self) -> Iterable[SupplyDemand]:
+    def supplies_demands(self) -> Iterable[SupplyDemandBase]:
         pass
