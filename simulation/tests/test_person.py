@@ -1,6 +1,7 @@
 import unittest
 from unittest import TestCase
 from unittest.mock import Mock, patch, call, MagicMock
+from numpy.lib.polynomial import poly1d
 from simulator import Person
 
 
@@ -207,6 +208,14 @@ class PersonOrderPlacementTest(BasePersonTest):
         person.on_order_filled(self.order, 6, -7)
 
         self.assertNotIn(resource, person.inventory)
+
+    def test_to_dict_returns_correct_data(self):
+        population_mock = MagicMock()
+        person = Person(population_mock, MagicMock(), MagicMock())
+
+        result = person.to_dict()
+
+        self.assertEquals(result, {'inventory': person.inventory, 'population': population_mock.to_dict.return_value})
 
 if __name__ == '__main__':
     unittest.main()

@@ -9,9 +9,12 @@ class TestSimulationResultView(BaseUniverseTestCase):
         super().setUp()
         self.simulate_patcher = patch('population.views.simulate')
         self.simulate_mock = self.simulate_patcher.start()
+        self.json_response_patcher = patch('population.views.JsonResponse')
+        self.json_response_mock = self.json_response_patcher.start()
 
     def tearDown(self):
         self.simulate_patcher.stop()
+        self.json_response_patcher.stop()
 
     def test_retrieves_universe_by_id(self):
         simulation_result(self.request, 0)
@@ -23,7 +26,8 @@ class TestSimulationResultView(BaseUniverseTestCase):
 
         self.simulate_mock.assert_called_once_with(self.universe)
 
-    def test_retunrs_simulate_resunt(self):
+    def test_returns_simulate_result(self):
         result = simulation_result(self.request, 0)
 
-        self.assertEquals(result, self.simulate_mock.return_value)
+        self.json_response_mock.assert_called_once_with(self.simulate_mock.return_value)
+        self.assertEquals(result, self.json_response_mock.return_value)

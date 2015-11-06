@@ -9,11 +9,11 @@ class Simulator(object):
 
     def __init__(self):
         self._persons = []
-        self.__snapshots = []
+        self._snapshots = []
 
     @property
     def snapshots(self):
-        return self.__snapshots
+        return self._snapshots
 
     def simulate(self, universe):
         self._create_persons(universe)
@@ -42,13 +42,18 @@ class Simulator(object):
             snapshot.append(person.copy_full())
         self.snapshots.append(snapshot)
 
-    def get_snapshots_dictionary(self):
-        raise NotImplementedError()
+    def get_simulation_result_dictionary(self):
+        snapshots = []
+        for snapshot in self.snapshots:
+            current_snapshot = []
+            for person in snapshot:
+                current_snapshot.append(person.to_dict())
+            snapshots.append(current_snapshot)
+
+        return {'snapshots': snapshots}
 
 
 class Person(object):
-    MIN_RANDOM_PRICE = 100
-    MAX_RANDOM_PRICE = 200
     INITIAL_MONEY = 1000
     MONEY_RESOURCE_NAME = 'Money'
 
@@ -108,3 +113,6 @@ class Person(object):
 
         if self.inventory[resource] == 0:
             self.inventory.pop(resource)
+
+    def to_dict(self):
+        return {'population': self.population.to_dict(), 'inventory': self.inventory}

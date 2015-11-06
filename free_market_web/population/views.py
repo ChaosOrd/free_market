@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -37,7 +38,7 @@ def play_universe(request, universe_id):
 def simulation_result(request, universe_id):
     universe = Universe.objects.get(id=int(universe_id))
     simulation = simulate(universe)
-    return simulation
+    return JsonResponse(simulation)
 
 
 class BaseUniverseView(View):

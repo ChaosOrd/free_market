@@ -14,6 +14,8 @@ class SupplyDemandBase(object):
     def value(self) -> float:
         pass
 
+    def to_dict(self):
+        return {'resource': self.resource, 'value': self.value}
 
 class PopulationBase(object):
 
@@ -28,3 +30,7 @@ class PopulationBase(object):
     @abc.abstractproperty
     def supplies_demands(self) -> Iterable[SupplyDemandBase]:
         pass
+
+    def to_dict(self):
+        supplies_demands = [supply_demand.to_dict() for supply_demand in self.supplies_demands]
+        return {'name': self.name, 'supplies_demands': supplies_demands}

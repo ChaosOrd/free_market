@@ -7,7 +7,7 @@ def simulate(universe):
     simulator = Simulator()
     sim_universe = SimUniverse.from_universe(universe)
     simulator.simulate(sim_universe)
-    return simulator.get_snapshots_dictionary()
+    return simulator.get_simulation_result_dictionary()
 
 
 class SimulatorApi(object):

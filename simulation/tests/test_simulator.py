@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, patch, call, MagicMock
 from simulator import Simulator
 
 
@@ -129,6 +129,22 @@ class SimulatorTest(TestCase):
 
         self.assertIn(self.person1.copy_full.return_value, simulator.snapshots[0])
         self.assertIn(self.person2.copy_full.return_value, simulator.snapshots[0])
+
+    def test_get_simulation_results_dictionary_returns_snapshots(self):
+        simulator = Simulator()
+        person1_snapshot1 = MagicMock()
+        person2_snapshot1 = MagicMock()
+        person1_snapshot2 = MagicMock()
+        person2_snapshot2 = MagicMock()
+
+        simulator._snapshots = [[person1_snapshot1, person2_snapshot1],
+                                [person1_snapshot2, person2_snapshot2]]
+
+        simulation_result = simulator.get_simulation_result_dictionary()
+        self.assertEquals(simulation_result, {'snapshots': [[person1_snapshot1.to_dict.return_value,
+                                                            person2_snapshot1.to_dict.return_value],
+                                                            [person1_snapshot2.to_dict.return_value,
+                                                             person2_snapshot2.to_dict.return_value]]})
 
 if __name__ == '__main__':
     unittest.main()

@@ -38,8 +38,8 @@ class TestSimulatorApi(TestCase):
 
         self.sim_universe_cls.from_universe.assert_called_once_with(self.universe)
 
-    def test_simulate_gets_snapshots_dictionary(self):
+    def test_simulate_gets_simulation_result_dictionary(self):
         simulated_result = simulate(self.universe)
 
-        self.simulator_obj.get_snapshots_dictionary.assert_called_once_with()
-        self.assertEquals(simulated_result, self.simulator_obj.get_snapshots_dictionary.return_value)
+        self.simulator_obj.get_simulation_result_dictionary.assert_called_once_with()
+        self.assertEquals(simulated_result, self.simulator_obj.get_simulation_result_dictionary.return_value)
