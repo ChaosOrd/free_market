@@ -86,14 +86,19 @@ class TestSimpleStrategy(TestCase):
         supplies_demands = [self.water_demand, self.tools_demand]
         inventory = {}
         strategy = SimpleStrategy(self.exchange)
-        self.exchange.get_best_sell.side_effect = [
-            self.water_sell_order, self.tools_sell_order
-        ]
+
+        def get_best_sell_side_effect(resource):
+            if resource == self.water_resource:
+                return self.water_sell_order
+            if resource == self.tools_resource:
+                return self.tools_sell_order
+
+        self.exchange.get_best_sell.side_effect = get_best_sell_side_effect
 
         strategy.make_move(supplies_demands, inventory)
 
-        expected_calls = [call(resource=self.water_resource, price=140, quantity=-1),
-                          call(resource=self.tools_resource, price=240, quantity=-0.5)]
+        expected_calls = [call(resource=self.water_resource, price=140, quantity=1),
+                          call(resource=self.tools_resource, price=240, quantity=0.5)]
         self.order_cls.assert_has_calls(expected_calls, any_order=True)
 
     def test_make_move_returns_created_orders(self):
@@ -103,9 +108,14 @@ class TestSimpleStrategy(TestCase):
         second_order = MagicMock()
         self.order_cls.side_effect = [first_order, second_order]
         strategy = SimpleStrategy(self.exchange)
-        self.exchange.get_best_sell.side_effect = [
-            self.water_sell_order, self.tools_sell_order
-        ]
+
+        def get_best_sell_side_effect(resource):
+            if resource == self.water_resource:
+                return self.water_sell_order
+            if resource == self.tools_resource:
+                return self.tools_sell_order
+
+        self.exchange.get_best_sell.side_effect = get_best_sell_side_effect
 
         self.assertEqual([first_order, second_order], strategy.make_move(supplies_demands, inventory))
 
@@ -136,8 +146,8 @@ class TestSimpleStrategy(TestCase):
 
         strategy.make_move(supplies_demands, inventory)
 
-        expected_calls = [call(resource=self.grain_resource, price=self.random.randint.return_value, quantity=7.5),
-                          call(resource=self.potatoes_resource, price=self.random.randint.return_value, quantity=4)]
+        expected_calls = [call(resource=self.grain_resource, price=self.random.randint.return_value, quantity=-7.5),
+                          call(resource=self.potatoes_resource, price=self.random.randint.return_value, quantity=-4)]
         self.order_cls.assert_has_calls(expected_calls, any_order=True)
 
     def test_make_move_calls_random_for_each_demand(self):

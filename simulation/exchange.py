@@ -20,6 +20,10 @@ class Order(object):
     def quantity(self):
         return self._quantity
 
+    @quantity.setter
+    def quantity(self, value):
+        self._quantity = value
+
     @property
     def side(self):
         if self.quantity > 0:
@@ -33,46 +37,55 @@ class Order(object):
 
 class Exchange(object):
     def __init__(self):
-        self.__book = []
+        self.__book = {}
         self.__order_sequence_number = 0
 
     def place_order(self, order, sender):
-        self.__book.append(BookEntry(self.__order_sequence_number, order, sender))
+        order_resource = order.resource
+        if order_resource not in self.__book:
+            self.__book[order_resource] = []
+
+        book_resource = self.__book[order_resource]
+
+        book_resource.append(BookEntry(self.__order_sequence_number, order, sender))
         self.__order_sequence_number += 1
 
         self.__sort_book()
         self.__fill_orders_if_needed()
 
-        for order_entry in self.__book:
+        for order_entry in book_resource:
             order = order_entry.order
             if order.quantity == 0:
-                self.__book.remove(order_entry)
+                self.__book[order_resource].remove(order_entry)
 
-    def get_best_sell(self) -> Order:
+    def get_best_sell(self, resource: str) -> Order:
         def comparison_criteria(order1, order2):
             return order1.price < order2.price
 
         def filtering_criteria(order):
             return order.side == OrderSide.Sell
 
-        return self.__find_order(filtering_criteria, comparison_criteria)
+        return self.__find_order(resource, filtering_criteria, comparison_criteria)
 
-    def get_best_buy(self):
+    def get_best_buy(self, resource: str):
         def comparison_criteria(order1, order2):
             return order1.price > order2.price
 
         def filtering_criteria(order):
             return order.side == OrderSide.Buy
 
-        return self.__find_order(filtering_criteria, comparison_criteria)
+        return self.__find_order(resource, filtering_criteria, comparison_criteria)
 
     @property
     def book_size(self):
         return len(self.__book)
 
-    def __find_order(self, filtering_criteria, comparison_criteria):
+    def __find_order(self, resource, filtering_criteria, comparison_criteria):
+        if resource not in self.__book:
+            return None
+
         max_comparison_order = None
-        for book_entry in self.__book:
+        for book_entry in self.__book[resource]:
             order = book_entry.order
 
             if filtering_criteria(order):
@@ -86,12 +99,15 @@ class Exchange(object):
             order = order_entry.order
             return copysign(order.price, order.quantity)
 
-        self.__book = sorted(self.__book, key=get_order_entry_key)
+        for book_resource in self.__book:
+            self.__book[book_resource] = sorted(self.__book[book_resource], key=get_order_entry_key)
 
     def __fill_orders_if_needed(self):
-        for idx in range(len(self.__book) - 1):
-            self.__fill_orders_if_crossing(self.__book[idx],
-                                           self.__book[idx + 1])
+        for resource in self.__book:
+            book_resource = self.__book[resource]
+            for idx in range(len(book_resource) - 1):
+                self.__fill_orders_if_crossing(book_resource[idx],
+                                               book_resource[idx + 1])
 
     def __fill_orders_if_crossing(self, first_entry, second_entry):
         first_order = first_entry.order
@@ -127,7 +143,18 @@ class Exchange(object):
             return second_entry.order.price
 
     def get_orders_sent_by(self, sender):
-        return [order_entry.order for order_entry in self.__book if order_entry.sender == sender]
+        sent_orders = []
+        for book_resource in self.__book:
+            for order_entry in self.__book[book_resource]:
+                if order_entry.sender == sender:
+                    sent_orders.append(order_entry.order)
+        return sent_orders
+
+    def get_number_of_placed_orders(self, standard_resource):
+        if standard_resource not in self.__book:
+            return 0
+
+        return len(self.__book[standard_resource])
 
 
 class BookEntry(object):

@@ -45,13 +45,13 @@ class SimpleStrategy(BaseStrategy):
         return order
 
     def _create_buy_order(self, demand: SupplyDemandBase):
-        best_sell = self._exchange.get_best_sell()
+        best_sell = self._exchange.get_best_sell(demand.resource)
         if best_sell is not None:
-            return Order(resource=demand.resource, price=best_sell.price, quantity=demand.value)
+            return Order(resource=demand.resource, price=best_sell.price, quantity=-demand.value)
 
         return None
 
     def _create_sell_order(self, supply: SupplyDemandBase):
         return Order(resource=supply.resource,
                      price=random.randint(self.MIN_RANDOM_PRICE, self.MAX_RANDOM_PRICE),
-                     quantity=supply.value)
+                     quantity=-supply.value)
