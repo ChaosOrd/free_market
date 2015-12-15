@@ -95,6 +95,9 @@ class Person(object):
         return person
 
     def on_iteration(self):
+        self._place_orders()
+
+    def _place_orders(self):
         working_orders = self.exchange.get_orders_sent_by(self)
         orders_to_place = self.strategy.make_move(self.population.supplies_demands, self.inventory, working_orders)
         for order in orders_to_place:
