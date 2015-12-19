@@ -29,7 +29,7 @@ class Simulator(object):
     def _fill_persons_from_population(self, pop, exchange):
         for person_idx in range(pop.quantity):
             person = Person.from_population(pop, exchange)
-            self._persons.extend(person)
+            self._persons.append(person)
 
     def _run_iterations(self):
         for iteration in range(self.NUM_OF_ITERATIONS):
@@ -75,16 +75,6 @@ class Person(object):
 
     @classmethod
     def from_population(cls, population, exchange):
-        persons = []
-        initial_person = cls._single_person_from_population(population, exchange)
-
-        for person_idx in range(population.quantity):
-            persons.append(initial_person.copy_initial())
-
-        return persons
-
-    @classmethod
-    def _single_person_from_population(cls, population, exchange):
         simple_strategy = SimpleStrategy(exchange)
         return Person(population=population, exchange=exchange, strategy=simple_strategy)
 

@@ -51,43 +51,29 @@ class PersonInitializationTest(BasePersonTest):
         self.simple_strategy_patcher = patch('simulator.SimpleStrategy')
         self.simple_strategy_mock = self.simple_strategy_patcher.start()
 
-    @patch('simulator.Person._single_person_from_population')
-    def test_from_population_calls_single_person_from_population(self, single_person_from_population_mock):
-        Person.from_population(self.population_mock, self.exchange_mock)
+    @patch('simulator.Person.from_population')
+    def test_from_population_returns_single_person_created_from_population(self, person_from_population_mock):
+        person = Person.from_population(self.population_mock, self.exchange_mock)
 
-        single_person_from_population_mock.assert_called_once_with(
+        person_from_population_mock.assert_called_once_with(
                 self.population_mock, self.exchange_mock)
+        self.assertEquals(person, person_from_population_mock.return_value)
 
-    @patch('simulator.Person._single_person_from_population')
-    def test_from_population_returns_list_of_copies_from_initial_person(self, single_person_from_population_mock):
-        Person.copy_initial = Mock()
-        first_person_copy = Mock()
-        second_person_copy = Mock()
-        third_person_copy = Mock()
-        initial_person = single_person_from_population_mock.return_value
-        initial_person.copy_initial.side_effect = [first_person_copy, second_person_copy,
-                                                   third_person_copy]
-
-        persons = Person.from_population(self.population_mock, self.exchange_mock)
-
-        self.assertEquals(persons, [first_person_copy, second_person_copy,
-                                    third_person_copy])
-
-    def test_single_person_from_population_sets_person_population(self):
-        initial_person = Person._single_person_from_population(self.population_mock,
-                                                               self.exchange_mock)
+    def test_from_population_sets_person_population(self):
+        initial_person = Person.from_population(self.population_mock,
+                                                self.exchange_mock)
 
         self.assertEquals(initial_person.population, self.population_mock)
 
-    def test_single_person_from_population_sets_person_exchange(self):
-        initial_person = Person._single_person_from_population(self.population_mock,
-                                                               self.exchange_mock)
+    def test_from_population_sets_person_exchange(self):
+        initial_person = Person.from_population(self.population_mock,
+                                                self.exchange_mock)
 
         self.assertEquals(initial_person.exchange, self.exchange_mock)
 
-    def test_single_person_from_population_sets_person_strategy(self):
-        initial_person = Person._single_person_from_population(self.population_mock,
-                                                               self.exchange_mock)
+    def test_from_population_sets_person_strategy(self):
+        initial_person = Person.from_population(self.population_mock,
+                                                self.exchange_mock)
 
         self.simple_strategy_mock.assert_called_once_with(self.exchange_mock)
         self.assertEqual(initial_person.strategy, self.simple_strategy_mock.return_value)
@@ -166,6 +152,13 @@ class PersonOrderPlacementTest(BasePersonTest):
         self.simple_person.on_iteration()
 
         self.assert_placed_orders(self.simple_person, [first_order, second_order])
+
+    def assert_does_not_place_orders_if_strategy_returned_empty_list(self):
+        self.strategy_mock.make_move.return_value = []
+
+        self.simple_person.on_iteration()
+
+        self.assertFalse(self.exchange_mock.place_order.called)
 
     def test_on_order_filled_reduces_money_when_buying(self):
         self.simple_person.money = 100
@@ -301,28 +294,6 @@ class PersonProductionTest(BasePersonTest):
         person.on_iteration()
 
         self.assertEquals(person.inventory, old_inventory)
-    # def test_on_iteration_creates_resource_in_inventory_according_to_supply(self):
-    #     person = self._create_person_with_wheat_supply()
-    #
-    #     person.on_iteration()
-    #
-    #     self.assertEquals(person.inventory['Wheat'], 2.5)
-    #
-    # def test_on_iteration_adds_quantity_to_existing_resource_according_to_supply(self):
-    #     person = self._create_person_with_wheat_supply()
-    #     person.inventory['Wheat'] = 1.0
-    #
-    #     person.on_iteration()
-    #
-    #     self.assertEquals(person.inventory['Wheat'], 3.5)
-    #
-    # def test_on_iteration_does_not_reduce_resource_value_below(self):
-    #     person = self._create_person_with_wheat_demand()
-    #     initial_inventory = copy.deepcopy(person.inventory)
-    #
-    #     person.on_iteration()
-    #
-    #     self.assertEquals(person.inventory, initial_inventory)
 
 
 if __name__ == '__main__':
