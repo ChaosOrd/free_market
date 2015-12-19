@@ -38,7 +38,7 @@ class SimpleStrategy(BaseStrategy):
         return orders
 
     def _get_order_handling_supply_demand(self, supply_demand):
-        if supply_demand.value < 0:
+        if supply_demand.is_demand():
             order = self._create_buy_order(supply_demand)
         else:
             order = self._create_sell_order(supply_demand)

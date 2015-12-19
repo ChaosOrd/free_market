@@ -14,8 +14,15 @@ class SupplyDemandBase(object):
     def value(self) -> float:
         pass
 
+    def is_demand(self):
+        return self.value < 0
+
+    def is_supply(self):
+        return not self.is_demand()
+
     def to_dict(self):
         return {'resource': self.resource, 'value': self.value}
+
 
 class PopulationBase(object):
 

@@ -1,6 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 from strategies import SimpleStrategy
+from tests.helpers import SupplyDemandHelper
 
 __author__ = 'chaosord'
 
@@ -59,12 +60,12 @@ class TestSimpleStrategy(TestCase):
         self.create_tools_demand()
 
     def create_water_demand(self):
-        self.water_demand = MagicMock()
+        self.water_demand = SupplyDemandHelper.create_demand_mock()
         self.water_demand.value = -1
         self.water_demand.resource = self.water_resource
 
     def create_tools_demand(self):
-        self.tools_demand = MagicMock()
+        self.tools_demand = SupplyDemandHelper.create_demand_mock()
         self.tools_demand.value = -0.5
         self.tools_demand.resource = self.tools_resource
 
@@ -73,12 +74,12 @@ class TestSimpleStrategy(TestCase):
         self.create_potatoes_supply()
 
     def create_grain_supply(self):
-        self.grain_supply = MagicMock()
+        self.grain_supply = SupplyDemandHelper.create_supply_mock()
         self.grain_supply.value = 7.5
         self.grain_supply.resource = self.grain_resource
 
     def create_potatoes_supply(self):
-        self.potatoes_supply = MagicMock()
+        self.potatoes_supply = SupplyDemandHelper.create_supply_mock()
         self.potatoes_supply.value = 4
         self.potatoes_supply.resource = self.potatoes_resource
 

@@ -1,6 +1,7 @@
 from api.simulator_api import PopulationBase
 from exchange import Exchange
 from strategies import SimpleStrategy, BaseStrategy
+from production import Craft
 
 
 class Simulator(object):
@@ -62,6 +63,7 @@ class Person(object):
         self.strategy = strategy
         self.exchange = exchange
         self.inventory = {self.MONEY_RESOURCE_NAME: self.INITIAL_MONEY}
+        self.craft = Craft()
 
     @property
     def money(self):
@@ -95,7 +97,13 @@ class Person(object):
         return person
 
     def on_iteration(self):
+        self._produce_resources()
         self._place_orders()
+
+    def _produce_resources(self):
+        for supply_demand in self.population.supplies_demands:
+            if supply_demand.is_supply():
+                self.inventory = self.craft.calculate_production_result(supply_demand, self.inventory)
 
     def _place_orders(self):
         working_orders = self.exchange.get_orders_sent_by(self)
