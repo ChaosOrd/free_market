@@ -22,8 +22,6 @@ SECRET_KEY = 'q403im!5ri2rh^9d(!)jhva@ibf2by068_z7&u1y79_mg^x_$4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -89,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'debug': DEBUG
         },
     },
 ]
