@@ -45,6 +45,10 @@ class SimPopulation(PopulationBase):
         self.__quantity = quantity
         self.__supplies_demands = supplies_demands
 
+    def __str__(self):
+        return '{{name: {}, quantity: {}, supplies_demands: {}}}'.format(
+                self.name, self.quantity, self.supplies_demands)
+
     @property
     def name(self):
         return self.__name
@@ -75,6 +79,12 @@ class SimSupplyDemand(SupplyDemandBase):
     def __init__(self, resource, value):
         self.__resource = resource
         self.__value = value
+
+    def __str__(self):
+        return '{{resource: {}, value: {}}}'.format(self.resource, self.value)
+
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def resource(self):

@@ -10,7 +10,60 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+U_LOG_FILE_SIZE = 1 * 1024 * 1024
+U_LOGFILE_COUNT = 5
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%Y-%m-%d %H:%M:%S"
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+        'web_logfile': {
+            'level': 'DEBUG',
+            'maxBytes': U_LOG_FILE_SIZE,
+            'backupCount': U_LOGFILE_COUNT,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR + '/../log/web.log',
+            'formatter': 'standard',
+        },
+        'simulator_logfile': {
+            'level': 'DEBUG',
+            'maxBytes': U_LOG_FILE_SIZE,
+            'backupCount': U_LOGFILE_COUNT,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR + '/../log/simulator.log',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'free_market_web': {
+            'handlers': ['web_logfile', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'simulation': {
+            'handlers': ['simulator_logfile', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
+
 
 
 # Quick-start development settings - unsuitable for production

@@ -1,7 +1,11 @@
+import logging
+
 from api.simulator_api import PopulationBase
 from exchange import Exchange
 from strategies import SimpleStrategy, BaseStrategy
 from production import Craft
+
+logger = logging.getLogger(__name__)
 
 
 class Simulator(object):
@@ -17,24 +21,30 @@ class Simulator(object):
         return self._snapshots
 
     def simulate(self, universe):
+        logger.info('Simulation started')
         self._create_persons(universe)
         self._run_iterations()
 
     def _create_persons(self, universe):
+        logger.info('Creating persons from universe')
         exchange = Exchange()
 
         for pop in universe.populations:
             self._fill_persons_from_population(pop, exchange)
 
     def _fill_persons_from_population(self, pop, exchange):
+        logger.info('Creating persons from {} population'.format(pop))
         for person_idx in range(pop.quantity):
             person = Person.from_population(pop, exchange)
             self._persons.append(person)
 
     def _run_iterations(self):
+        logger.info('Starting to run simulation iterations')
         for iteration in range(self.NUM_OF_ITERATIONS):
+            logger.debug('Starting iteration {}'.format(iteration + 1))
             self._simulate_iteration()
-            print('Simulated {} iterations'.format(iteration))
+
+        logger.info('All {} iteration finished'.format(self.NUM_OF_ITERATIONS))
 
     def _simulate_iteration(self):
         snapshot = []
