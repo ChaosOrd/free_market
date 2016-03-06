@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Play summary{% endblock %}
 {% block content %}
-<div id="simulated_universe_id" hidden>{{ universe_id }}</div>
+    <div id="simulated_universe_id" hidden>{{ universe_id }}</div>
+    <div id="current_iteration" tyle="width: 900px; height: 500px;"></div>
 {% endblock %}
 {% block scripts %}
-<script src="/static/simulation/simulation.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="/static/simulation.js"></script>
 {% endblock %}

@@ -1,0 +1,35 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Javascript tests</title>
+    <link rel="stylesheet" href="../../../free_market_web/static/tests/qunit.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit_fixture">
+    <div id="simulated_universe_id">12345</div>
+</div>
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="../../../free_market_web/static/tests/qunit.js"></script>
+<script src="../../../free_market_web/static/tests/sinon.js"></script>
+<script src="../simulation.js"></script>
+<script>
+    module("simulation", {
+        beforeEach: function() {
+            sinon.spy(jQuery, 'ajax');
+            sinon.spy(google.charts.Bar);
+        },
+        afterEach: function() {
+            jQuery.ajax.restore();
+        }
+    });
+
+    test("on simulation completed fills the simulation result", function() {
+        var simulationResult = {'x': '1444'};
+        onSimulationCompleted(simulationResult);
+        equal(Simulation.SimulationResult, simulationResult);
+    });
+</script>
+</body>
+</html>

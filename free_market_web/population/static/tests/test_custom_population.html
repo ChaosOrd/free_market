@@ -46,10 +46,10 @@ module("custom population", {
     jQuery.ajax.restore();
     $('#supplies_demands').html('');
   }
-})
+});
 
 test("clicking on add_supply_demand should make an ajax request with next sd number", function() {
-  $('#next_sd_num').val('5')
+  $('#next_sd_num').val('5');
   $('#add_supply_demand').trigger("click");
 
   equal(true, jQuery.ajax.calledWithMatch({

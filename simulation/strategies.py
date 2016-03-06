@@ -1,6 +1,6 @@
 import abc
-from typing import Mapping, List, Iterable, Sequence
 import random
+from typing import Mapping, Iterable, Sequence
 
 from api.simulator_api import SupplyDemandBase
 from exchange import Exchange, Order
